@@ -1231,7 +1231,7 @@ class IC_SharedFunctions_Class
     {
         for k, v in formation
         {
-            if ( v != -1 )
+            if ( v != -1 AND v != 91 AND v != 47 AND v != 75 AND v != 115)
             {
                 hasSeatUpgrade := this.Memory.ReadBoughtLastUpgrade(this.Memory.ReadChampSeatByID(v))
                 if (!hasSeatUpgrade)

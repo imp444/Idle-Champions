@@ -13,3 +13,4 @@ AddOns/IC_BrivGemFarm_Private/
 #AddonManagement Addon ignores
 AddOns/GeneratedAddonInclude.ahk
 AddOns/IC_Addon_Management/AddonManagement.json
+.idea/vcs.xml
