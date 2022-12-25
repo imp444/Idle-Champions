@@ -430,7 +430,9 @@ class IC_SharedFunctions_Class
     DoDashWait( DashWaitMaxZone := 2000 )
     {
         this.ToggleAutoProgress( 0, false, true )
-        this.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
+        levelShandie := this.Memory.ReadChampLvlByID(47)
+        if(levelShandie < 230)
+            this.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
         ; Make sure the ability handler has the correct base address.
         ; It can change on game restarts or modron resets.
         this.Memory.ActiveEffectKeyHandler.Refresh()
@@ -1233,9 +1235,27 @@ class IC_SharedFunctions_Class
         {
             if ( v != -1 AND v != 91 AND v != 47 AND v != 75 AND v != 115)
             {
-                hasSeatUpgrade := this.Memory.ReadBoughtLastUpgrade(this.Memory.ReadChampSeatByID(v))
-                if (!hasSeatUpgrade)
-                    return false
+                if( v == 58)
+                {
+                    levelBriv := this.Memory.ReadChampLvlByID(58) ; Briv
+                    if (levelBriv < 1300)
+                        return False
+                }
+                if( v == 113)
+                {
+                    levelEgbert := this.Memory.ReadChampLvlByID(113) ; Egbert
+                    if (levelEgbert < 1400)
+                        return False
+                }
+                if( v == 94)
+                {
+                    levelRust := this.Memory.ReadChampLvlByID(94) ; Rust
+                    if (levelRust < 2640)
+                        return False
+                }
+                ;hasSeatUpgrade := this.Memory.ReadBoughtLastUpgrade(this.Memory.ReadChampSeatByID(v))
+                ;if (!hasSeatUpgrade)
+                    ;return false
             }
         }
         return true

@@ -529,78 +529,59 @@ class IC_BrivGemFarm_Class
         levelRust := g_SF.Memory.ReadChampLvlByID(94)
         if(levelRust < 2640 AND g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
             keyspam.Push("{F11}")
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        ;g_SF.DirectedInput(,, keyspam*)
-        g_SF.LevelChampByID( 58, 90, 7000, "{q}") ; level Virgil's Rapid Fire
-        levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
-        if(levelVirgil >= 100)
+        setupDone := False
+        while(!setupDone)
         {
-            for k, v in keyspam
+            g_SF.DirectedInput(,, keyspam*)
+            if (g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
             {
-                if (v == "{F10}")
+                levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
+                if(levelVirgil >= 100)
                 {
-                    keyspam.Delete(k)
-                    break
+                    for k, v in keyspam
+                    {
+                        if (v == "{F10}")
+                            keyspam.Delete(k)
+                    }
                 }
             }
-        }
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        ;g_SF.DirectedInput(,, keyspam*)
-        g_SF.LevelChampByID( 58, 180, 7000, "{q}") ; level Shandie's Ranger Training
-        levelShandie := g_SF.Memory.ReadChampLvlByID(47)
-        if(levelShandie >= 230)
-        {
-            for k, v in keyspam
+            if (g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
             {
-                if (v == "{F6}")
+                levelShandie := g_SF.Memory.ReadChampLvlByID(47)
+                if(levelShandie >= 230)
                 {
-                    keyspam.Delete(k)
-                    break
+                    for k, v in keyspam
+                    {
+                        if (v == "{F6}")
+                            keyspam.Delete(k)
+                    }
                 }
             }
-        }
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.DirectedInput(,, keyspam*)
-        g_SF.LevelChampByID( 58, 200, 7000, "{q}") ; level Widdle's Mind and Body + Hewmaan's Roll Out!
-        levelWiddle := g_SF.Memory.ReadChampLvlByID(91)
-        if(levelWiddle >= 310)
-        {
-            for k, v in keyspam
+            if (g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
             {
-                if (v == "{F2}")
+                levelWiddle := g_SF.Memory.ReadChampLvlByID(91)
+                if(levelWiddle >= 310)
                 {
-                    keyspam.Delete(k)
-                    break
+                    for k, v in keyspam
+                    {
+                        if (v == "{F2}")
+                            keyspam.Delete(k)
+                    }
                 }
             }
-        }
-        levelHewMaan := g_SF.Memory.ReadChampLvlByID(75)
-        if(levelHewMaan >= 360)
-        {
-            for k, v in keyspam
+            if (g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
             {
-                if (v == "{F8}")
+                levelHewMaan := g_SF.Memory.ReadChampLvlByID(75)
+                if(levelHewMaan >= 360)
                 {
-                    keyspam.Delete(k)
-                    break
+                    for k, v in keyspam
+                    {
+                        if (v == "{F8}")
+                            keyspam.Delete(k)
+                    }
                 }
             }
+            setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelShandie >= 230 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
         }
         g_SF.DirectedInput(hold:=0,, keyspam*)
         if(g_BrivUserSettings[ "Fkeys" ])
@@ -610,7 +591,7 @@ class IC_BrivGemFarm_Class
             g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
         }
         g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
-        if (g_SF.ShouldDashWait())
+        if (this.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1, false, true )
         return keyspam*
