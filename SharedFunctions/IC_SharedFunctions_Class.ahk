@@ -290,7 +290,7 @@ class IC_SharedFunctions_Class
         StartTime := A_TickCount
         ElapsedTime := 0
         counter := 0
-        sleepTime := 250
+        sleepTime := 33
         this.DirectedInput(,, "{q}")
         gold := this.ConvQuadToDouble( this.Memory.ReadGoldFirst8Bytes(), this.Memory.ReadGoldSecond8Bytes() )
         while ( gold == 0 AND ElapsedTime < maxLoopTime )

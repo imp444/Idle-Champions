@@ -176,15 +176,15 @@ class IC_BrivGemFarm_Class
             g_SF.SetFormation(g_BrivUserSettings)
             if ( g_SF.Memory.ReadResetsCount() > lastResetCount OR g_SharedData.TriggerStart) ; first loop or Modron has reset
             {
+                keyspam := Array()
                 g_SharedData.BossesHitThisRun := 0
                 g_SF.ToggleAutoProgress( 0, false, true )
                 g_SF.WaitForFirstGold()
-                keyspam := Array()
                 ;if g_BrivUserSettings[ "Fkeys" ]
                     ;keyspam := g_SF.GetFormationFKeys(formationModron)
                 doKeySpam := true
-                keyspam.Push("{ClickDmg}")
                 keyspam.Push(this.DoPartySetup())
+                keyspam.Push("{ClickDmg}")
                 lastResetCount := g_SF.Memory.ReadResetsCount()
                 g_SF.Memory.ActiveEffectKeyHandler.Refresh()
                 g_SharedData.TargetStacks := this.TargetStacks := g_SF.CalculateBrivStacksToReachNextModronResetZone() - g_SF.CalculateBrivStacksLeftAtTargetZone(g_SF.Memory.ReadCurrentZone(), g_SF.Memory.GetModronResetArea() + 1) + 50 ; 50 stack safety net
@@ -202,7 +202,10 @@ class IC_BrivGemFarm_Class
             if (!Mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND Mod( g_SF.Memory.ReadHighestZone(), 5 ) AND !g_SF.Memory.ReadTransitioning())
                 g_SF.ToggleAutoProgress( 1, true ) ; Toggle autoprogress to skip boss bag
             if (g_SF.Memory.ReadResetting())
+            {
                 this.ModronResetCheck()
+                keyspam = Array()
+            }
             if(CurrentZone > PreviousZone) ; needs to be greater than because offline could stacking getting stuck in descending zones.
             {
                 PreviousZone := CurrentZone
@@ -545,6 +548,18 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
+            if (g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+            {
+                levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+                if(levelBriv >= 170)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F5}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
             if (g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
             {
                 levelShandie := g_SF.Memory.ReadChampLvlByID(47)
@@ -581,13 +596,12 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelShandie >= 230 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
+            setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelBriv >= 170 OR !g_SF.IsChampInFormation(58, formationFavorite1)) AND (levelShandie >= 230 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
         }
         g_SF.DirectedInput(hold:=0,, keyspam*)
         if(g_BrivUserSettings[ "Fkeys" ])
         {
             ;keyspam := g_SF.GetFormationFKeys(g_SF.Memory.GetActiveModronFormation()) ; level other formation champions
-            keyspam.Push("{ClickDmg}")
             g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
         }
         g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
