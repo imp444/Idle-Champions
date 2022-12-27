@@ -598,6 +598,9 @@ class IC_BrivGemFarm_Class
             }
             setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelBriv >= 170 OR !g_SF.IsChampInFormation(58, formationFavorite1)) AND (levelShandie >= 230 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
         }
+        levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+        if(levelBriv < 1300 AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+            keyspam.Push("{F5}")
         g_SF.DirectedInput(hold:=0,, keyspam*)
         if(g_BrivUserSettings[ "Fkeys" ])
         {
