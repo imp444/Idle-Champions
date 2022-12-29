@@ -514,6 +514,9 @@ class IC_BrivGemFarm_Class
         levelWiddle := g_SF.Memory.ReadChampLvlByID(91)
         if(levelWiddle < 310 AND g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
             keyspam.Push("{F2}")
+        levelJarlaxle := g_SF.Memory.ReadChampLvlByID(4)
+        if(levelJarlaxle < 2150 AND g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
+            keyspam.Push("{F4}")
         levelBriv := g_SF.Memory.ReadChampLvlByID(58)
         if(levelBriv < 1300 AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
             keyspam.Push("{F5}")
