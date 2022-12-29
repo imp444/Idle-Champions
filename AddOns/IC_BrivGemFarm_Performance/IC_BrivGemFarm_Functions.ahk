@@ -521,7 +521,7 @@ class IC_BrivGemFarm_Class
         if(levelBriv < 1300 AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
             keyspam.Push("{F5}")
         levelShandie := g_SF.Memory.ReadChampLvlByID(47)
-        if(levelShandie < 230 AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
+        if(levelShandie < 120 AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
             keyspam.Push("{F6}")
         levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
         if(levelEgbert < 1400 AND g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
@@ -566,7 +566,7 @@ class IC_BrivGemFarm_Class
             if (g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
             {
                 levelShandie := g_SF.Memory.ReadChampLvlByID(47)
-                if(levelShandie >= 230)
+                if(levelShandie >= 120)
                 {
                     for k, v in keyspam
                     {
@@ -599,7 +599,7 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelBriv >= 170 OR !g_SF.IsChampInFormation(58, formationFavorite1)) AND (levelShandie >= 230 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
+            setupDone := (levelVirgil >= 100 OR !g_SF.IsChampInFormation(115, formationFavorite1)) AND (levelBriv >= 170 OR !g_SF.IsChampInFormation(58, formationFavorite1)) AND (levelShandie >= 120 OR !g_SF.IsChampInFormation(47, formationFavorite1)) AND (levelWiddle >= 310 OR !g_SF.IsChampInFormation(91, formationFavorite1)) AND (levelHewMaan >= 360 OR !g_SF.IsChampInFormation(75, formationFavorite1))
         }
         levelBriv := g_SF.Memory.ReadChampLvlByID(58)
         if(levelBriv < 1300 AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
