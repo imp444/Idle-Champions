@@ -106,7 +106,8 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
         currentFormation := this.Memory.GetCurrentFormation()
         isShandieInFormation := this.IsChampInFormation( 47, currentFormation )
         hasHasteStacks := this.Memory.ReadHasteStacks() > 50
-        return (!g_BrivUserSettings[ "DisableDashWait" ] AND isShandieInFormation AND hasHasteStacks)
+        dashWaitMaxZone := Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0)
+        return (!g_BrivUserSettings[ "DisableDashWait" ] AND this.Memory.ReadCurrentZone() < dashWaitMaxZone AND isShandieInFormation AND hasHasteStacks)
     }
 }
 
@@ -645,7 +646,6 @@ class IC_BrivGemFarm_Class
                 }
             }
             setupJarlaxle := levelJarlaxle >= minLvlJarlaxle OR !g_SF.IsChampInFormation(4, formationFavorite1)
-            setupEgbert := levelEgbert>= minLvlEgbert OR !g_SF.IsChampInFormation(113, formationFavorite1)
             setupShandie := levelShandie >= minLvlShandie OR !g_SF.IsChampInFormation(47, formationFavorite1)
             setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
             setupRust := levelRust >= minLvlRust OR !g_SF.IsChampInFormation(94, formationFavorite1)
@@ -673,7 +673,7 @@ class IC_BrivGemFarm_Class
             g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
         }
         g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
-        if (this.ShouldDashWait())
+        if (g_SF.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1, false, true )
         return keyspam*

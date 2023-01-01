@@ -431,8 +431,8 @@ class IC_SharedFunctions_Class
     {
         this.ToggleAutoProgress( 0, false, true )
         levelShandie := this.Memory.ReadChampLvlByID(47)
-        if(levelShandie < 230)
-            this.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
+        if(levelShandie < 120)
+            this.LevelChampByID( 47, 120, 7000, "{q}") ; level shandie
         ; Make sure the ability handler has the correct base address.
         ; It can change on game restarts or modron resets.
         this.Memory.ActiveEffectKeyHandler.Refresh()
