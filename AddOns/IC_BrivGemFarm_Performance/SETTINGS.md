@@ -6,7 +6,10 @@ These are the currently available advanced settings for this AddOn. These are ar
 
 * **BrivJumpBuffer** - 0-2000 (zones/areas)  
 This value tells the script how many areas before a modron reset zone that switching to e formation over q formation is desired. The value should be greater than the stack zone value, but less than the modron reset value. This helps resolve issues of Briv Stacks not being converted properly on modron resets.
-  
+
+* **BrivMaxLevel** - 0-? (level)
+This is the maximum level Briv will be leveled to.
+
 * **DashWaitBuffer** - 0-? (time in ms)  
 **Updated:** DashWaitBuffer has been repurposed to be a distance from your modron's reset zone where dashwait will stop being activated. Default is 30.
 e.g. WIth the default value DashWait will not trigger if the script is started at 280 and then reset area is 305.

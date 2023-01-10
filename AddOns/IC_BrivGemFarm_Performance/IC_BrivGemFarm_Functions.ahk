@@ -830,7 +830,7 @@ class IC_BrivGemFarm_Class
         }
         if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
         {
-            maxLvlBriv := 575 ; 180 265 340 455 575 695 815 935 1050 1170 1300
+            maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
             levelBriv := g_SF.Memory.ReadChampLvlByID(58)
             if(levelBriv < maxLvlBriv)
             {
