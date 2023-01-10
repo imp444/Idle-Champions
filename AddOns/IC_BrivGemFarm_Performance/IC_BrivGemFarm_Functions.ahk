@@ -207,6 +207,7 @@ class IC_BrivGemFarm_Class
                 this.ModronResetCheck()
                 keyspam = Array()
             }
+            this.DoPartySetupAFter()
             if(CurrentZone > PreviousZone) ; needs to be greater than because offline could stacking getting stuck in descending zones.
             {
                 PreviousZone := CurrentZone
@@ -503,30 +504,62 @@ class IC_BrivGemFarm_Class
     DoPartySetup()
     {
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
-        /* isShandieInFormation := g_SF.IsChampInFormation( 47, formationFavorite1 )
-        g_SF.LevelChampByID( 58, 170, 7000, "{q}") ; level briv
-        if(isShandieInFormation)
-            g_SF.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
-        isHavilarInFormation := g_SF.IsChampInFormation( 56, formationFavorite1 )
-        if(isHavilarInFormation)
-            g_SF.LevelChampByID( 56, 15, 7000, "{q}") ; level havi
-        */
         keyspam := ["{q}"]
-        minLvlEzmeralda := 90, maxLvlEzmeralda := 90 ; 315
-        minLvlWiddle := 310, maxLvlWiddle := 310
+        minLvlEzmeralda := 90, maxLvlEzmeralda := 90 ; 90 315
+        minLvlWiddle := 140, maxLvlWiddle := 310 ; 260 310 350
         minLvlJarlaxle := 1, maxLvlJarlaxle  := 2150
         minLvlPaultin := 1, maxLvlPaultin := 3440
         minLvlSentry := 80, maxLvlSentry := 80
         minLvlKent := 1, maxLvlKent := 1
-        minLvlBriv := 170, maxLvlBriv := 1300
+        minLvlBriv := 80, maxLvlBriv := 1300 ; 80 170
         minLvlShandie := 120, maxLvlShandie := 120
         minLvlEgbert := 1, maxLvlEgbert := 1400
-        minLvlHewmaan := 240, maxLvlHewmaan := 240
+        minLvlHewmaan := 170, maxLvlHewmaan := 240 ; 240 360
         minLvlShaka := 1, maxLvlShaka := 1
         minLvlVirgil := 100, maxLvlVirgil:= 100
-        minLvlRust := 160, maxLvlRust := 2640
+        minLvlRust := 1, maxLvlRust := 2640
         minLvlArkhan := 65, maxLvlArkhan := 65
-        g_SF.LevelChampByID( 58, 80, 7000, "{q}") ; level briv jump
+        brivshandiespam := ["{q}"]
+        levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+        if(levelBriv < maxLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+            brivshandiespam.Push("{F5}")
+        levelShandie := g_SF.Memory.ReadChampLvlByID(47)
+        if(levelShandie < maxLvlShandie AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
+            brivshandiespam.Push("{F6}")
+        setupDone := False
+        while(!setupDone)
+        {
+            g_SF.DirectedInput(,, brivshandiespam*)
+            if (g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
+            {
+                levelShandie := g_SF.Memory.ReadChampLvlByID(47)
+                if(levelShandie >= minLvlShandie)
+                {
+                    for k, v in brivshandiespam
+                    {
+                        if (v == "{F6}")
+                            brivshandiespam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+            {
+                levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+                if(levelBriv >= minLvlBriv)
+                {
+                    for k, v in brivshandiespam
+                    {
+                        if (v == "{F5}")
+                            brivshandiespam.Delete(k)
+                    }
+                }
+            }
+            setupShandie := levelShandie >= minLvlShandie OR !g_SF.IsChampInFormation(47, formationFavorite1)
+            setupBriv := levelBriv >= minLvlBriv OR !g_SF.IsChampInFormation(58, formationFavorite1)
+            setupDone := setupShandie AND setupBriv
+            Sleep, 20
+        }
+        minLvlBriv := 170
         levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
         if(levelEzmeralda < maxLvlEzmeralda AND g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
             keyspam.Push("{F1}")
@@ -547,9 +580,6 @@ class IC_BrivGemFarm_Class
         levelBriv := g_SF.Memory.ReadChampLvlByID(58)
         if(levelBriv < maxLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
             keyspam.Push("{F5}")
-        levelShandie := g_SF.Memory.ReadChampLvlByID(47)
-        if(levelShandie < maxLvlShandie AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
-            keyspam.Push("{F6}")
         levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
         if(levelEgbert < maxLvlEgbert AND g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
             keyspam.Push("{F7}")
@@ -566,12 +596,35 @@ class IC_BrivGemFarm_Class
         if(levelRust < maxLvlRust AND g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
             keyspam.Push("{F11}")
         levelArkhan := g_SF.Memory.ReadChampLvlByID(12)
-        if(levelArkhan < maxLvlArkhan AND g_SF.IsChampInFormation(12, formationFavorite1)) ; Rust
+        if(levelArkhan < maxLvlArkhan AND g_SF.IsChampInFormation(12, formationFavorite1)) ; Arkhan
             keyspam.Push("{F12}")
         setupDone := False
         while(!setupDone)
         {
-            g_SF.DirectedInput(,, keyspam*)
+            if (g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
+            {
+                levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
+                if(levelEzmeralda>= minLvlEzmeralda)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F1}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
+            {
+                levelWiddle := g_SF.Memory.ReadChampLvlByID(91)
+                if(levelWiddle >= minLvlWiddle)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F2}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
             if (g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
             {
                 levelJarlaxle := g_SF.Memory.ReadChampLvlByID(4)
@@ -596,30 +649,6 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            if (g_SF.IsChampInFormation(114, formationFavorite1)) ; Kent
-            {
-                levelKent := g_SF.Memory.ReadChampLvlByID(114)
-                if(levelKent >= minLvlKent)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F4}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
-            {
-                levelShaka := g_SF.Memory.ReadChampLvlByID(79)
-                if(levelShaka >= minLvlShaka)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F9}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
             if (g_SF.IsChampInFormation(52, formationFavorite1)) ; Sentry
             {
                 levelSentry := g_SF.Memory.ReadChampLvlByID(52)
@@ -632,62 +661,14 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            if (g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
+            if (g_SF.IsChampInFormation(114, formationFavorite1)) ; Kent
             {
-                levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
-                if(levelEgbert >= minLvlEgbert)
+                levelKent := g_SF.Memory.ReadChampLvlByID(114)
+                if(levelKent >= minLvlKent)
                 {
                     for k, v in keyspam
                     {
-                        if (v == "{F7}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
-            {
-                levelShandie := g_SF.Memory.ReadChampLvlByID(47)
-                if(levelShandie >= minLvlShandie)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F6}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
-            {
-                levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
-                if(levelVirgil >= minLvlVirgil)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F10}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(12, formationFavorite1)) ; Arkhan
-            {
-                levelArkhan := g_SF.Memory.ReadChampLvlByID(12)
-                if(levelArkhan >= minLvlArkhan)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F12}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
-            {
-                levelRust := g_SF.Memory.ReadChampLvlByID(94)
-                if(levelRust >= minLvlRust)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F11}")
+                        if (v == "{F4}")
                             keyspam.Delete(k)
                     }
                 }
@@ -704,15 +685,14 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-
-            if (g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
+            if (g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
             {
-                levelWiddle := g_SF.Memory.ReadChampLvlByID(91)
-                if(levelWiddle >= minLvlWiddle)
+                levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
+                if(levelEgbert >= minLvlEgbert)
                 {
                     for k, v in keyspam
                     {
-                        if (v == "{F2}")
+                        if (v == "{F7}")
                             keyspam.Delete(k)
                     }
                 }
@@ -729,53 +709,74 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            if (g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
+            if (g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
             {
-                levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
-                if(levelEzmeralda>= minLvlEzmeralda)
+                levelShaka := g_SF.Memory.ReadChampLvlByID(79)
+                if(levelShaka >= minLvlShaka)
                 {
                     for k, v in keyspam
                     {
-                        if (v == "{F1}")
+                        if (v == "{F9}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
+            {
+                levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
+                if(levelVirgil >= minLvlVirgil)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F10}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
+            {
+                levelRust := g_SF.Memory.ReadChampLvlByID(94)
+                if(levelRust >= minLvlRust)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F11}")
+                            keyspam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(12, formationFavorite1)) ; Arkhan
+            {
+                levelArkhan := g_SF.Memory.ReadChampLvlByID(12)
+                if(levelArkhan >= minLvlArkhan)
+                {
+                    for k, v in keyspam
+                    {
+                        if (v == "{F12}")
                             keyspam.Delete(k)
                     }
                 }
             }
             setupEzmeralda := levelEzmeralda >= minLvlEzmeralda OR !g_SF.IsChampInFormation(70, formationFavorite1)
+            setupWiddle := levelWiddle >= minLvlWiddle OR !g_SF.IsChampInFormation(91, formationFavorite1)
             setupJarlaxle := levelJarlaxle >= minLvlJarlaxle OR !g_SF.IsChampInFormation(4, formationFavorite1)
             setupPaultin := levelPaultin >= minLvlPaultin OR !g_SF.IsChampInFormation(39, formationFavorite1)
             setupSentry := levelSentry >= minLvlSentry OR !g_SF.IsChampInFormation(52, formationFavorite1)
             setupKent := levelKent >= minLvlKent OR !g_SF.IsChampInFormation(114, formationFavorite1)
-            setupShaka := levelShaka >= minLvlShaka OR !g_SF.IsChampInFormation(79, formationFavorite1)
-            setupEgbert := levelEgbert >= minLvlEgbert OR !g_SF.IsChampInFormation(113, formationFavorite1)
-            setupShandie := levelShandie >= minLvlShandie OR !g_SF.IsChampInFormation(47, formationFavorite1)
-            setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
-            setupArkhan := levelArkhan >= minLvlArkhan OR !g_SF.IsChampInFormation(12, formationFavorite1)
-            setupRust := levelRust >= minLvlRust OR !g_SF.IsChampInFormation(94, formationFavorite1)
             setupBriv := levelBriv >= minLvlBriv OR !g_SF.IsChampInFormation(58, formationFavorite1)
-            setupWiddle := levelWiddle >= minLvlWiddle OR !g_SF.IsChampInFormation(91, formationFavorite1)
+            setupEgbert := levelEgbert >= minLvlEgbert OR !g_SF.IsChampInFormation(113, formationFavorite1)
             setupHewmaan := levelHewMaan >= minLvlHewmaan OR !g_SF.IsChampInFormation(75, formationFavorite1)
-            setupDone := setupEzmeralda AND setupJarlaxle AND setupPaultin AND setupKent AND setupShaka AND setupEgbert AND setupSentry AND setupShandie AND setupVirgil AND setupArkhan AND setupRust AND setupBriv AND setupWiddle AND setupHewmaan
+            setupShaka := levelShaka >= minLvlShaka OR !g_SF.IsChampInFormation(79, formationFavorite1)
+            setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
+            setupRust := levelRust >= minLvlRust OR !g_SF.IsChampInFormation(94, formationFavorite1)
+            setupArkhan := levelArkhan >= minLvlArkhan OR !g_SF.IsChampInFormation(12, formationFavorite1)
+            setupDone := setupEzmeralda AND setupWiddle AND setupJarlaxle AND setupPaultin AND setupSentry AND setupKent AND setupBriv AND setupEgbert AND setupHewmaan AND setupShaka AND setupVirgil AND setupRust AND setupArkhan
+            g_SF.DirectedInput(,, keyspam*)
+            Sleep, 20
         }
-        levelJarlaxle := g_SF.Memory.ReadChampLvlByID(4)
-        if(levelJarlaxle < maxLvlJarlaxle AND g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
-            keyspam.Push("{F4}")
-        levelPaultin := g_SF.Memory.ReadChampLvlByID(39)
-        if(levelPaultin < maxLvlPaultin AND g_SF.IsChampInFormation(39, formationFavorite1)) ; Paultin
-            keyspam.Push("{F4}")
-        levelBriv := g_SF.Memory.ReadChampLvlByID(58)
-        if(levelBriv < maxLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
-            keyspam.Push("{F5}")
-        levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
-        if(levelEgbert < maxLvlEgbert AND g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
-            keyspam.Push("{F7}")
-        levelRust := g_SF.Memory.ReadChampLvlByID(94)
-        if(levelRust < maxLvlRust AND g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
-            keyspam.Push("{F11}")
         g_SF.DirectedInput(hold:=0,, keyspam*)
         if(g_BrivUserSettings[ "Fkeys" ])
         {
-            ;keyspam := g_SF.GetFormationFKeys(g_SF.Memory.GetActiveModronFormation()) ; level other formation champions
             g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
         }
         g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
@@ -783,6 +784,102 @@ class IC_BrivGemFarm_Class
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1, false, true )
         return keyspam*
+    }
+
+    DoPartySetupAfter()
+    {
+        formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
+        if(g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
+        {
+            maxLvlWiddle := 310 ; 260 310 350
+            levelWiddle:= g_SF.Memory.ReadChampLvlByID(91)
+            if(levelWiddle< maxLvlWiddle)
+            {
+                g_SF.DirectedInput(,, "{F2}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F2}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
+        {
+            maxLvlJarlaxle := 2150 ;
+            levelJarlaxle := g_SF.Memory.ReadChampLvlByID(4)
+            if(levelJarlaxle < maxLvlJarlaxle)
+            {
+                g_SF.DirectedInput(,, "{F4}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F4}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(39, formationFavorite1)) ; Paultin
+        {
+            maxLvlPaultin := 3440 ;
+            levelPaultin := g_SF.Memory.ReadChampLvlByID(39)
+            if(levelPaultin < maxLvlPaultin)
+            {
+                g_SF.DirectedInput(,, "{F4}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F4}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+        {
+            maxLvlBriv := 575 ; 180 265 340 455 575 695 815 935 1050 1170 1300
+            levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+            if(levelBriv < maxLvlBriv)
+            {
+                g_SF.DirectedInput(,, "{F5}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F5}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
+        {
+            maxLvlEgbert := 1400 ;
+            levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
+            if(levelEgbert < maxLvlEgbert)
+            {
+                g_SF.DirectedInput(,, "{F7}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F7}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
+        {
+            maxLvlHewmaan := 240 ;
+            levelHewmaan := g_SF.Memory.ReadChampLvlByID(75)
+            if(levelHewmaan < maxLvlHewmaan)
+            {
+                g_SF.DirectedInput(,, "{F8}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F8}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
+        {
+            maxLvlRust := 2640 ;
+            levelRust := g_SF.Memory.ReadChampLvlByID(94)
+            if(levelRust < maxLvlRust)
+            {
+                g_SF.DirectedInput(,, "{F11}") ;keysdownup
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F11}") ;keysup
+            }
+        }
     }
 
     ;Waits for modron to reset. Closes IC if it fails.
