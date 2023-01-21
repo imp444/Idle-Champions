@@ -950,7 +950,7 @@ class IC_BrivGemFarm_Class
                 var .= " Bought " . amount . " gold chests."
             }
         }
-        if ( g_BrivUserSettings[ "OpenSilvers" ] AND g_SF.TotalSilverChests > 0 AND g_BrivUserSettings[ "RestartStackTime" ] > ( A_TickCount - startTime + openSilverChestTimeEst) )
+        if ( g_BrivUserSettings[ "OpenSilvers" ] AND g_SF.TotalSilverChests > 0 AND (g_BrivUserSettings[ "RestartStackTime" ] > ( A_TickCount - startTime + openSilverChestTimeEst) AND g_SF.TotalSilverChests > 99))
         {
             amount := Min(g_SF.TotalSilverChests, 99)
             chestResults := g_ServerCall.callOpenChests( chestID := 1, amount )
@@ -963,7 +963,7 @@ class IC_BrivGemFarm_Class
             g_sharedData.ShinyCount += g_ServerCall.shinies
             var .= " Opened " . amount . " silver chests."
         }
-        if ( g_BrivUserSettings[ "OpenGolds" ] AND g_SF.TotalGoldChests > 0 AND g_BrivUserSettings[ "RestartStackTime" ] > ( A_TickCount - startTime + openGoldChestTimeEst) )
+        if ( g_BrivUserSettings[ "OpenGolds" ] AND g_SF.TotalGoldChests > 0 AND (g_BrivUserSettings[ "RestartStackTime" ] > ( A_TickCount - startTime + openGoldChestTimeEst) OR g_SF.TotalGoldChests > 99))
         {
             amount := Min(g_SF.TotalGoldChests, 99)
             chestResults := g_ServerCall.callOpenChests( chestID := 2, amount )
