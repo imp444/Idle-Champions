@@ -796,10 +796,39 @@ class IC_BrivGemFarm_Class
             if(levelWiddle< maxLvlWiddle)
             {
                 g_SF.DirectedInput(,, "{F2}") ;keysdownup
+                return
             }
             else
             {
                 g_SF.DirectedInput(hold:=0,, "{F2}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
+        {
+            maxLvlHewmaan := 240 ;
+            levelHewmaan := g_SF.Memory.ReadChampLvlByID(75)
+            if(levelHewmaan < maxLvlHewmaan)
+            {
+                g_SF.DirectedInput(,, "{F8}") ;keysdownup
+                return
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F8}") ;keysup
+            }
+        }
+        if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+        {
+            maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
+            levelBriv := g_SF.Memory.ReadChampLvlByID(58)
+            if(levelBriv < maxLvlBriv)
+            {
+                g_SF.DirectedInput(,, "{F5}") ;keysdownup
+                return
+            }
+            else
+            {
+                g_SF.DirectedInput(hold:=0,, "{F5}") ;keysup
             }
         }
         if(g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
@@ -809,6 +838,7 @@ class IC_BrivGemFarm_Class
             if(levelJarlaxle < maxLvlJarlaxle)
             {
                 g_SF.DirectedInput(,, "{F4}") ;keysdownup
+                return
             }
             else
             {
@@ -822,23 +852,11 @@ class IC_BrivGemFarm_Class
             if(levelPaultin < maxLvlPaultin)
             {
                 g_SF.DirectedInput(,, "{F4}") ;keysdownup
+                return
             }
             else
             {
                 g_SF.DirectedInput(hold:=0,, "{F4}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
-        {
-            maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
-            levelBriv := g_SF.Memory.ReadChampLvlByID(58)
-            if(levelBriv < maxLvlBriv)
-            {
-                g_SF.DirectedInput(,, "{F5}") ;keysdownup
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F5}") ;keysup
             }
         }
         if(g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
@@ -848,23 +866,11 @@ class IC_BrivGemFarm_Class
             if(levelEgbert < maxLvlEgbert)
             {
                 g_SF.DirectedInput(,, "{F7}") ;keysdownup
+                return
             }
             else
             {
                 g_SF.DirectedInput(hold:=0,, "{F7}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
-        {
-            maxLvlHewmaan := 240 ;
-            levelHewmaan := g_SF.Memory.ReadChampLvlByID(75)
-            if(levelHewmaan < maxLvlHewmaan)
-            {
-                g_SF.DirectedInput(,, "{F8}") ;keysdownup
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F8}") ;keysup
             }
         }
         if(g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
@@ -874,6 +880,7 @@ class IC_BrivGemFarm_Class
             if(levelRust < maxLvlRust)
             {
                 g_SF.DirectedInput(,, "{F11}") ;keysdownup
+                return
             }
             else
             {
