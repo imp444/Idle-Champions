@@ -506,7 +506,7 @@ class IC_BrivGemFarm_Class
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
         keyspam := ["{q}"]
         minLvlEzmeralda := 90, maxLvlEzmeralda := 90 ; 90 315
-        minLvlWiddle := 140, maxLvlWiddle := 310 ; 260 310 350
+        minLvlWiddle := 1, maxLvlWiddle := 310 ; 260 310 350
         minLvlJarlaxle := 1, maxLvlJarlaxle  := 2150
         minLvlPaultin := 1, maxLvlPaultin := 3440
         minLvlSentry := 80, maxLvlSentry := 80
@@ -514,7 +514,7 @@ class IC_BrivGemFarm_Class
         minLvlBriv := 80, maxLvlBriv := 1300 ; 80 170
         minLvlShandie := 120, maxLvlShandie := 120
         minLvlEgbert := 1, maxLvlEgbert := 1400
-        minLvlHewmaan := 170, maxLvlHewmaan := 240 ; 240 360
+        minLvlHewmaan := 200, maxLvlHewmaan := 240 ; 40 200 240 360
         minLvlShaka := 1, maxLvlShaka := 1
         minLvlVirgil := 100, maxLvlVirgil:= 100
         minLvlRust := 1, maxLvlRust := 2640
