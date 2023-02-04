@@ -1,3 +1,12 @@
+January 28, 2023
+    Updated 64 bit Imports for v490.
+    Updated VersionPicker to sort versions numerically.
+    Fixed bug where the correct play server was not being read from memory resulting in a using a default of ps6.
+    Added potential fix for losing Patron when doing a reset and the patron can not be read from memory.
+
+January 9, 2023
+    Updated 64 bit Imports for v485.1
+
 December 23, 2022
     Updated 64 bit Imports for v484
 
