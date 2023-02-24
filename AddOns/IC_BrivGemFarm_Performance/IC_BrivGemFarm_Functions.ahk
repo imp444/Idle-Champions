@@ -526,6 +526,12 @@ class IC_BrivGemFarm_Class
         levelShandie := g_SF.Memory.ReadChampLvlByID(47)
         if(levelShandie < maxLvlShandie AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
             brivshandiespam.Push("{F6}")
+        levelShaka := g_SF.Memory.ReadChampLvlByID(79)
+        if(levelShaka < maxLvlShaka AND g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
+            brivshandiespam.Push("{F9}")
+        levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
+        if(levelVirgil < maxLvlVirgil AND g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
+            brivshandiespam.Push("{F10}")
         setupDone := False
         while(!setupDone)
         {
@@ -554,9 +560,35 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
+            if (g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
+            {
+                levelShaka := g_SF.Memory.ReadChampLvlByID(79)
+                if(levelShaka >= minLvlShaka)
+                {
+                    for k, v in brivshandiespam
+                    {
+                        if (v == "{F9}")
+                            brivshandiespam.Delete(k)
+                    }
+                }
+            }
+            if (g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
+            {
+                levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
+                if(levelVirgil >= minLvlVirgil)
+                {
+                    for k, v in brivshandiespam
+                    {
+                        if (v == "{F10}")
+                            brivshandiespam.Delete(k)
+                    }
+                }
+            }
             setupShandie := levelShandie >= minLvlShandie OR !g_SF.IsChampInFormation(47, formationFavorite1)
             setupBriv := levelBriv >= minLvlBriv OR !g_SF.IsChampInFormation(58, formationFavorite1)
-            setupDone := setupShandie AND setupBriv
+            setupShaka := levelShaka >= minLvlShaka OR !g_SF.IsChampInFormation(79, formationFavorite1)
+            setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
+            setupDone := setupShandie AND setupBriv AND setupShaka AND setupVirgil
             Sleep, 20
         }
         minLvlBriv := 170
@@ -586,12 +618,6 @@ class IC_BrivGemFarm_Class
         levelHewMaan := g_SF.Memory.ReadChampLvlByID(75)
         if(levelHewMaan < maxLvlHewmaan AND g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
             keyspam.Push("{F8}")
-        levelShaka := g_SF.Memory.ReadChampLvlByID(79)
-        if(levelShaka < maxLvlShaka AND g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
-            keyspam.Push("{F9}")
-        levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
-        if(levelVirgil < maxLvlVirgil AND g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
-            keyspam.Push("{F10}")
         levelRust := g_SF.Memory.ReadChampLvlByID(94)
         if(levelRust < maxLvlRust AND g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
             keyspam.Push("{F11}")
@@ -709,30 +735,6 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
-            if (g_SF.IsChampInFormation(79, formationFavorite1)) ; Shaka
-            {
-                levelShaka := g_SF.Memory.ReadChampLvlByID(79)
-                if(levelShaka >= minLvlShaka)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F9}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
-            if (g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
-            {
-                levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
-                if(levelVirgil >= minLvlVirgil)
-                {
-                    for k, v in keyspam
-                    {
-                        if (v == "{F10}")
-                            keyspam.Delete(k)
-                    }
-                }
-            }
             if (g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
             {
                 levelRust := g_SF.Memory.ReadChampLvlByID(94)
@@ -766,11 +768,9 @@ class IC_BrivGemFarm_Class
             setupBriv := levelBriv >= minLvlBriv OR !g_SF.IsChampInFormation(58, formationFavorite1)
             setupEgbert := levelEgbert >= minLvlEgbert OR !g_SF.IsChampInFormation(113, formationFavorite1)
             setupHewmaan := levelHewMaan >= minLvlHewmaan OR !g_SF.IsChampInFormation(75, formationFavorite1)
-            setupShaka := levelShaka >= minLvlShaka OR !g_SF.IsChampInFormation(79, formationFavorite1)
-            setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
             setupRust := levelRust >= minLvlRust OR !g_SF.IsChampInFormation(94, formationFavorite1)
             setupArkhan := levelArkhan >= minLvlArkhan OR !g_SF.IsChampInFormation(12, formationFavorite1)
-            setupDone := setupEzmeralda AND setupWiddle AND setupJarlaxle AND setupPaultin AND setupSentry AND setupKent AND setupBriv AND setupEgbert AND setupHewmaan AND setupShaka AND setupVirgil AND setupRust AND setupArkhan
+            setupDone := setupEzmeralda AND setupWiddle AND setupJarlaxle AND setupPaultin AND setupSentry AND setupKent AND setupBriv AND setupEgbert AND setupHewmaan AND setupRust AND setupArkhan
             g_SF.DirectedInput(,, keyspam*)
             Sleep, 20
         }
