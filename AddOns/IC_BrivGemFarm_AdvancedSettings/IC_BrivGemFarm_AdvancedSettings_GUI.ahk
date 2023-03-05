@@ -71,7 +71,7 @@ Gui, ICScriptHub:Add, Text, x10 y+10 , Leveling Settings
 Gui, ICScriptHub:Font, w400
 
 default := g_BrivUserSettings[ "BrivMaxLevel" ]
-Gui, ICScriptHub:Add, ComboBox, vOptionSettingEdit_BrivMaxLevel x15 y+5 w50, %default%||180|265|340|455|575|695|815|935|1050|1170|1300
+Gui, ICScriptHub:Add, ComboBox, vOptionSettingEdit_BrivMaxLevel x15 y+5 w50, %default%||170|180|265|340|455|575|695|815|935|1050|1170|1300
 
 GuiControlGet, xyVal, ICScriptHub:Pos, OptionSettingEdit_BrivMaxLevel
 xyValX += 55

@@ -256,7 +256,7 @@ class IC_BrivGemFarm_Class
         forcedReset := false
         forcedResetReason := ""
         ; passed stack zone, start stack farm. Normal operation.
-        if ( stacks < targetStacks AND CurrentZone > g_BrivUserSettings[ "StackZone" ] )
+        if ( ((stacks < targetStacks) OR ((CurrentZone - g_BrivUserSettings[ "StackZone" ]) < 10)) AND CurrentZone > g_BrivUserSettings[ "StackZone" ] )
             this.StackFarm()
         else
         {
