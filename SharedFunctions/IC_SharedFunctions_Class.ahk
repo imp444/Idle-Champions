@@ -272,7 +272,7 @@ class IC_SharedFunctions_Class
                 this.DirectedInput(,, "{g}" )
                 keyCount++
             }
-        }
+        } 
         Critical, Off
     }
 
@@ -730,6 +730,13 @@ class IC_SharedFunctions_Class
                 DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + 3)
                 DllCall("CloseHandle", "UInt", ProcessHandle)
                 this.Memory.OpenProcessReader()
+                Sleep, 2500
+                this.DirectedInput(,, "{ESC}") ;keysdownup
+                Sleep, 250
+                this.DirectedInput(,, "{ESC}") ;keysdownup
+                Sleep, 250
+                this.DirectedInput(,, "{ESC}") ;keysdownup
+                Sleep, 50
                 loadingZone := this.WaitForGameReady()
                 this.ResetServerCall()
             }
