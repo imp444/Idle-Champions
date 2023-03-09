@@ -514,7 +514,7 @@ class IC_BrivGemFarm_Class
         minLvlBriv := 80, maxLvlBriv := 1300 ; 80 170
         minLvlShandie := 120, maxLvlShandie := 120
         minLvlEgbert := 1, maxLvlEgbert := 1400
-        minLvlHewmaan := 200, maxLvlHewmaan := 240 ; 40 200 240 360
+        minLvlHewmaan := 200, maxLvlHewmaan := 220 ; 40 200 220 360
         minLvlShaka := 1, maxLvlShaka := 1
         minLvlVirgil := 100, maxLvlVirgil:= 100
         minLvlRust := 1, maxLvlRust := 2640
@@ -805,7 +805,7 @@ class IC_BrivGemFarm_Class
         }
         if(g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
         {
-            maxLvlHewmaan := 240 ;
+            maxLvlHewmaan := 220 ;
             levelHewmaan := g_SF.Memory.ReadChampLvlByID(75)
             if(levelHewmaan < maxLvlHewmaan)
             {
