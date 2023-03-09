@@ -300,7 +300,7 @@ class IC_BrivGemFarm_Class
     {
         if ( g_BrivUserSettings[ "RestartStackTime" ] )
         {
-            return g_SF.Memory.ReadHasteStacks() + g_SF.Memory.ReadSBStacks()
+            return g_BrivUserSettings[ "EarlyStacking" ] ? g_SF.Memory.ReadSBStacks() : g_SF.Memory.ReadHasteStacks() + g_SF.Memory.ReadSBStacks()
         }
         else
         {
@@ -521,7 +521,7 @@ class IC_BrivGemFarm_Class
         minLvlArkhan := 65, maxLvlArkhan := 65
         brivshandiespam := ["{q}"]
         levelBriv := g_SF.Memory.ReadChampLvlByID(58)
-        if(levelBriv < maxLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
+        if(levelBriv < minLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
             brivshandiespam.Push("{F5}")
         levelShandie := g_SF.Memory.ReadChampLvlByID(47)
         if(levelShandie < maxLvlShandie AND g_SF.IsChampInFormation(47, formationFavorite1)) ; Shandie
@@ -591,7 +591,8 @@ class IC_BrivGemFarm_Class
             setupDone := setupShandie AND setupBriv AND setupShaka AND setupVirgil
             Sleep, 20
         }
-        minLvlBriv := 170
+        if(g_BrivUserSettings[ "BrivMaxLevel" ] >= 170)
+            minLvlBriv := 170
         levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
         if(levelEzmeralda < maxLvlEzmeralda AND g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
             keyspam.Push("{F1}")
@@ -819,7 +820,16 @@ class IC_BrivGemFarm_Class
         }
         if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
         {
-            maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
+            if (g_BrivUserSettings[ "BrivMaxLevel" ] < 170)
+            {
+                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
+                if g_SF.Memory.ReadSBStacks() >= targetStacks
+                    maxLvlBriv = 170
+            }
+            else
+            {
+                maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
+            }
             levelBriv := g_SF.Memory.ReadChampLvlByID(58)
             if(levelBriv < maxLvlBriv)
             {
