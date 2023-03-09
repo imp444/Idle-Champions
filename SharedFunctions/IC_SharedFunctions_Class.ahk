@@ -727,7 +727,7 @@ class IC_SharedFunctions_Class
                 this.ActivateLastWindow()
                 Process, Priority, % this.PID, High
                 ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", this.PID)
-                DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + 3)
+                DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
                 DllCall("CloseHandle", "UInt", ProcessHandle)
                 this.Memory.OpenProcessReader()
                 Sleep, 2500
