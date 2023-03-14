@@ -504,7 +504,6 @@ class IC_BrivGemFarm_Class
     DoPartySetup()
     {
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
-        keyspam := ["{q}"]
         minLvlEzmeralda := 90, maxLvlEzmeralda := 90 ; 90 315
         minLvlWiddle := 1, maxLvlWiddle := 310 ; 260 310 350
         minLvlJarlaxle := 1, maxLvlJarlaxle  := 2150
@@ -514,7 +513,7 @@ class IC_BrivGemFarm_Class
         minLvlBriv := 80, maxLvlBriv := 1300 ; 80 170
         minLvlShandie := 120, maxLvlShandie := 120
         minLvlEgbert := 1, maxLvlEgbert := 1400
-        minLvlHewmaan := 200, maxLvlHewmaan := 220 ; 40 200 220 360
+        minLvlHewmaan := 220, maxLvlHewmaan := 220 ; 40 200 220 360
         minLvlShaka := 1, maxLvlShaka := 1
         minLvlVirgil := 100, maxLvlVirgil:= 100
         minLvlRust := 1, maxLvlRust := 2640
@@ -591,8 +590,11 @@ class IC_BrivGemFarm_Class
             setupDone := setupShandie AND setupBriv AND setupShaka AND setupVirgil
             Sleep, 20
         }
+        keyspam := []
         if(g_BrivUserSettings[ "BrivMaxLevel" ] >= 170)
             minLvlBriv := 170
+        else
+            minLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
         levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
         if(levelEzmeralda < maxLvlEzmeralda AND g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
             keyspam.Push("{F1}")
@@ -628,6 +630,7 @@ class IC_BrivGemFarm_Class
         setupDone := False
         while(!setupDone)
         {
+            g_SF.SetFormation(g_BrivUserSettings)
             if (g_SF.IsChampInFormation(70, formationFavorite1)) ; Ezmeralda
             {
                 levelEzmeralda := g_SF.Memory.ReadChampLvlByID(70)
