@@ -152,6 +152,9 @@ class IC_BrivGemFarm_Class
         Process, Exist, %existingProcessID%
         g_SF.PID := ErrorLevel
         Process, Priority, % g_SF.PID, High
+        ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", g_SF.PID)
+        DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
+        DllCall("CloseHandle", "UInt", ProcessHandle)
         g_SF.Memory.OpenProcessReader()
         if(g_SF.VerifyAdventureLoaded() < 0)
             return

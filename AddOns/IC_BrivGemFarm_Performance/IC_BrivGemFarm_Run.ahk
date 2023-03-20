@@ -15,6 +15,10 @@ SetBatchLines, -1 ; How fast a script will run (affects CPU utilization).(Defaul
                   ; This allows scripts to run quickly while still maintaining a high level of cooperation with CPU sensitive tasks such as games and video capture/playback.
 ListLines Off
 Process, Priority,, High
+PID = % ErrorLevel
+ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", PID)
+DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", 3997695)
+DllCall("CloseHandle", "UInt", ProcessHandle)
 CoordMode, Mouse, Client
 
 ;Load user settings
