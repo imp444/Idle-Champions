@@ -521,6 +521,7 @@ class IC_BrivGemFarm_Class
         minLvlVirgil := 100, maxLvlVirgil:= 100
         minLvlRust := 1, maxLvlRust := 2640
         minLvlArkhan := 65, maxLvlArkhan := 65
+        minLvlSelise := 1, maxLvlSelise := 1
         brivshandiespam := ["{q}"]
         levelBriv := g_SF.Memory.ReadChampLvlByID(58)
         if(levelBriv < minLvlBriv AND g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
@@ -534,6 +535,9 @@ class IC_BrivGemFarm_Class
         levelVirgil := g_SF.Memory.ReadChampLvlByID(115)
         if(levelVirgil < maxLvlVirgil AND g_SF.IsChampInFormation(115, formationFavorite1)) ; Virgil
             brivshandiespam.Push("{F10}")
+        levelSelise := g_SF.Memory.ReadChampLvlByID(81)
+        if(levelSelise < maxLvlSelise AND g_SF.IsChampInFormation(81, formationFavorite1)) ; Selise
+            brivshandiespam.Push("{F12}")
         setupDone := False
         while(!setupDone)
         {
@@ -586,11 +590,24 @@ class IC_BrivGemFarm_Class
                     }
                 }
             }
+            if (g_SF.IsChampInFormation(81, formationFavorite1)) ; Selise
+            {
+                levelSelise := g_SF.Memory.ReadChampLvlByID(81)
+                if(levelSelise >= minLvlSelise)
+                {
+                    for k, v in brivshandiespam
+                    {
+                        if (v == "{F12}")
+                            brivshandiespam.Delete(k)
+                    }
+                }
+            }
             setupShandie := levelShandie >= minLvlShandie OR !g_SF.IsChampInFormation(47, formationFavorite1)
             setupBriv := levelBriv >= minLvlBriv OR !g_SF.IsChampInFormation(58, formationFavorite1)
             setupShaka := levelShaka >= minLvlShaka OR !g_SF.IsChampInFormation(79, formationFavorite1)
             setupVirgil := levelVirgil >= minLvlVirgil OR !g_SF.IsChampInFormation(115, formationFavorite1)
-            setupDone := setupShandie AND setupBriv AND setupShaka AND setupVirgil
+            setupSelise := levelSelise >= minLvlSelise OR !g_SF.IsChampInFormation(81, formationFavorite1)
+            setupDone := setupShandie AND setupBriv AND setupShaka AND setupVirgil AND setupSelise
             Sleep, 20
         }
         keyspam := []
