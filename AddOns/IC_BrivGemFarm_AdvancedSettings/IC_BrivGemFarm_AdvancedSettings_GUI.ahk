@@ -23,6 +23,7 @@ Gui, ICScriptHub:Font, w400
 ;g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ]
 ;g_BrivUserSettings[ "WindowXPositon" ]
 ;g_BrivUserSettings[ "WindowYPositon" ]
+;g_BrivUserSettings[ "BrivMaxLevel" ]
 
 Gui, ICScriptHub:Add, Checkbox, vOptionSettingCheck_DoChestsContinuous x15 y+5, DoChestsContinuous
 Gui, ICScriptHub:Add, Checkbox, vOptionSettingCheck_HiddenFarmWindow x15 y+5, HiddenFarmWindow
@@ -64,9 +65,27 @@ Gui, ICScriptHub:Font, w400
 IC_BrivGemFarm_AdvancedSettings_Functions.BuildModTables(xyValX+20, xyValY)
 IC_BrivGemFarm_AdvancedSettings_Functions.LoadPreferredBrivJumpSettings()
 
+; ############ Leveling Settings #####################
+
+GuiControlGet, xyVal, ICScriptHub:Pos, OptionSettingText_TitlePreferredJump
+;xyValY += 235
+;xyValX := 10
+
+Gui, ICScriptHub:Font, w700
+Gui, ICScriptHub:Add, Text, x10 y+10 , Leveling Settings
+Gui, ICScriptHub:Font, w400
+
+default := g_BrivUserSettings[ "BrivMaxLevel" ]
+Gui, ICScriptHub:Add, ComboBox, vOptionSettingEdit_BrivMaxLevel x15 y+5 w50, %default%||170|180|265|340|455|575|695|815|935|1050|1170|1300
+
+GuiControlGet, xyVal, ICScriptHub:Pos, OptionSettingEdit_BrivMaxLevel
+xyValX += 55
+xyValY += 5
+Gui, ICScriptHub:Add, Text, x%xyValX% y%xyValY%+10 vOptionSettingText_BrivMaxLevel, BrivMaxLevel
+
 ; ############################################################
 
-Gui, ICScriptHub:Add, Button , x10 y+10 gBrivGemFarmAdvancedSettingsSave, Save
+Gui, ICScriptHub:Add, Button , x10 y+50 gBrivGemFarmAdvancedSettingsSave, Save
 
 IC_BrivGemFarm_AdvancedSettings_Component.AddToolTips()
 IC_BrivGemFarm_AdvancedSettings_Component.Refresh()

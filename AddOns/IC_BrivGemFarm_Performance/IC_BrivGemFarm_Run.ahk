@@ -15,6 +15,10 @@ SetBatchLines, -1 ; How fast a script will run (affects CPU utilization).(Defaul
                   ; This allows scripts to run quickly while still maintaining a high level of cooperation with CPU sensitive tasks such as games and video capture/playback.
 ListLines Off
 Process, Priority,, High
+PID = % ErrorLevel
+ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", PID)
+DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", 3997695)
+DllCall("CloseHandle", "UInt", ProcessHandle)
 CoordMode, Mouse, Client
 
 ;Load user settings
@@ -81,6 +85,7 @@ ReloadBrivGemFarmSettingsDisplay()
     LV_Add(, "Using Fkeys? ", g_BrivUserSettings[ "Fkeys" ] ? "Yes" : "No")
     LV_Add(, "Stack Fail Recovery? ", g_BrivUserSettings[ "StackFailRecovery" ] ? "Yes" : "No")
     LV_Add(, "Disable Dash Wait ", g_BrivUserSettings[ "DisableDashWait" ] ? "Yes" : "No")
+    LV_Add(, "Early Stacking ", g_BrivUserSettings[ "EarlyStacking" ] ? "Yes" : "No")
     LV_Add(, "Stack Zone: ", g_BrivUserSettings[ "StackZone" ])
     LV_Add(, "Min Stack Zone w/ can't reach Stack Zone: ", g_BrivUserSettings[ "MinStackZone" ])
     if(!g_BrivUserSettings[ "AutoCalculateBrivStacks" ])

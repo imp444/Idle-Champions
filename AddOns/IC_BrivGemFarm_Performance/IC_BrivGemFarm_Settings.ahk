@@ -58,6 +58,10 @@ ReloadBrivGemFarmSettings()
         g_BrivUserSettings[ "AutoCalculateWorstCase" ] := true
     if ( g_BrivUserSettings[ "PreferredBrivJumpZones" ] == "")
 	    g_BrivUserSettings[ "PreferredBrivJumpZones" ] := [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] 
+    if ( g_BrivUserSettings[ "BrivMaxLevel" ] == "" )
+        g_BrivUserSettings[ "BrivMaxLevel" ] := 1300
+    if ( g_BrivUserSettings[ "EarlyStacking" ] == "" )
+        g_BrivUserSettings[ "EarlyStacking" ] := false
     if(g_BrivUserSettings["WriteSettings"] := true)
     {
         g_BrivUserSettings.Delete("WriteSettings")

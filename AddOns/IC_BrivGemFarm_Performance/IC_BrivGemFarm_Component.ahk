@@ -17,6 +17,9 @@ Gui, ICScriptHub:Add, Checkbox, vFkeysCheck Checked%Fkeys% x15 y+5, Level Champi
 Gui, ICScriptHub:Add, Checkbox, vStackFailRecoveryCheck Checked%StackFailRecovery% x15 y+5, Enable manual resets to recover from failed Briv stacking?
 Gui, ICScriptHub:Add, Checkbox, vDisableDashWaitCheck Checked%DisableDashWait% x15 y+5, Disable Dash Wait?
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
+Gui, ICScriptHub:Add, Checkbox, vEarlyStackingCheck Checked%vEarlyStacking% x15 y+5, Early Stacking?
+if(g_isDarkMode)
+    Gui, ICScriptHub:Font, g_CustomColor
 Gui, ICScriptHub:Add, Edit, vNewStackZone x15 y+5 w50, % g_BrivUserSettings[ "StackZone" ]
 Gui, ICScriptHub:Add, Edit, vNewMinStackZone x15 y+10 w50, % g_BrivUserSettings[ "MinStackZone" ]
 Gui, ICScriptHub:Add, Edit, vNewTargetStacks x15 y+10 w50, % g_BrivUserSettings[ "TargetStacks" ]
@@ -115,6 +118,7 @@ class IC_BrivGemFarm_Component
         GuiControl,ICScriptHub:, OpenSilversCheck, % g_BrivUserSettings[ "OpenSilvers" ] 
         GuiControl,ICScriptHub:, OpenGoldsCheck, % g_BrivUserSettings[ "OpenGolds" ] 
         GuiControl,ICScriptHub:, DisableDashWaitCheck, % g_BrivUserSettings[ "DisableDashWait" ]
+        GuiControl,ICScriptHub:, EarlyStackingCheck, % g_BrivUserSettings[ "EarlyStacking" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsCheck, % g_BrivUserSettings[ "AutoCalculateBrivStacks" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsWorstCaseCheck, % g_BrivUserSettings[ "AutoCalculateWorstCase" ]
     }
@@ -247,6 +251,7 @@ class IC_BrivGemFarm_Component
         g_BrivUserSettings[ "TargetStacks" ] := StrReplace(NewTargetStacks, ",")
         g_BrivUserSettings[ "RestartStackTime" ] := StrReplace(NewRestartStackTime, ",")
         g_BrivUserSettings[ "DisableDashWait" ] := DisableDashWaitCheck
+        g_BrivUserSettings[ "EarlyStacking" ] := EarlyStackingCheck
         g_BrivUserSettings[ "DoChests" ] := DoChestsCheck
         g_BrivUserSettings[ "BuySilvers" ] := BuySilversCheck
         g_BrivUserSettings[ "BuyGolds" ] := BuyGoldsCheck

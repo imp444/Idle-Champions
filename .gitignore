@@ -15,3 +15,7 @@ AddOns/GeneratedAddonInclude.ahk
 AddOns/IC_Addon_Management/AddonManagement.json
 LastGUID*.json
 Current*.json
+.idea/vcs.xml
+AddOns/IC_BrivGemFarm_Performance/LastGUID_BrivGemFarm.json
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
