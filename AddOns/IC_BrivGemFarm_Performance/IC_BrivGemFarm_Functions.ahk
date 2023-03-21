@@ -902,112 +902,32 @@ class IC_BrivGemFarm_Class
 
     DoPartySetupAfter()
     {
+        maxLevels := {}
+        maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
+        if (maxLevels[58] < 170)
+        {
+            targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
+            if g_SF.Memory.ReadSBStacks() >= targetStacks
+                maxLevels[58] := 170
+        }
+        maxLevels[91] := 310 ; Widdle 260 310 350
+        maxLevels[75] := 220 ; Hewmann
+        maxLevels[4] := 2150 ; Jarlaxle
+        maxLevels[39] := 3440 ; Paultin
+        maxLevels[113] := 1400 ; Egbert
+        maxLevels[94] := 2640 ; Rust
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
-        if(g_SF.IsChampInFormation(91, formationFavorite1)) ; Widdle
+        for champID, champMaxLevel in maxLevels
         {
-            maxLvlWiddle := 310 ; 260 310 350
-            levelWiddle:= g_SF.Memory.ReadChampLvlByID(91)
-            if(levelWiddle< maxLvlWiddle)
+            if (g_SF.IsChampInFormation(champID, formationFavorite1))
             {
-                g_SF.DirectedInput(,, "{F2}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F2}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(75, formationFavorite1)) ; Hew Maan
-        {
-            maxLvlHewmaan := 220 ;
-            levelHewmaan := g_SF.Memory.ReadChampLvlByID(75)
-            if(levelHewmaan < maxLvlHewmaan)
-            {
-                g_SF.DirectedInput(,, "{F8}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F8}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(58, formationFavorite1)) ; Briv
-        {
-            if (g_BrivUserSettings[ "BrivMaxLevel" ] < 170)
-            {
-                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
-                if g_SF.Memory.ReadSBStacks() >= targetStacks
-                    maxLvlBriv = 170
-            }
-            else
-            {
-                maxLvlBriv := g_BrivUserSettings[ "BrivMaxLevel" ]
-            }
-            levelBriv := g_SF.Memory.ReadChampLvlByID(58)
-            if(levelBriv < maxLvlBriv)
-            {
-                g_SF.DirectedInput(,, "{F5}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F5}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(4, formationFavorite1)) ; Jarlaxle
-        {
-            maxLvlJarlaxle := 2150 ;
-            levelJarlaxle := g_SF.Memory.ReadChampLvlByID(4)
-            if(levelJarlaxle < maxLvlJarlaxle)
-            {
-                g_SF.DirectedInput(,, "{F4}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F4}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(39, formationFavorite1)) ; Paultin
-        {
-            maxLvlPaultin := 3440 ;
-            levelPaultin := g_SF.Memory.ReadChampLvlByID(39)
-            if(levelPaultin < maxLvlPaultin)
-            {
-                g_SF.DirectedInput(,, "{F4}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F4}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(113, formationFavorite1)) ; Egbert
-        {
-            maxLvlEgbert := 1400 ;
-            levelEgbert := g_SF.Memory.ReadChampLvlByID(113)
-            if(levelEgbert < maxLvlEgbert)
-            {
-                g_SF.DirectedInput(,, "{F7}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F7}") ;keysup
-            }
-        }
-        if(g_SF.IsChampInFormation(94, formationFavorite1)) ; Rust
-        {
-            maxLvlRust := 2640 ;
-            levelRust := g_SF.Memory.ReadChampLvlByID(94)
-            if(levelRust < maxLvlRust)
-            {
-                g_SF.DirectedInput(,, "{F11}") ;keysdownup
-                return
-            }
-            else
-            {
-                g_SF.DirectedInput(hold:=0,, "{F11}") ;keysup
+                level := g_SF.Memory.ReadChampLvlByID(champID)
+                Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
+                if (level < champMaxLevel)
+                {
+                    g_SF.DirectedInput(,, Fkey) ;keysdownup
+                    return
+                }
             }
         }
     }
