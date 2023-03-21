@@ -8,14 +8,10 @@ Logging*LOG*
 *LV_Functions.ahk
 eos*
 UserSettings.ini
+.idea
 Addons/IC_BrivGemFarm_Performance/IC_BrivGemFarm_Mods.ahk
 AddOns/IC_BrivGemFarm_Private/
 #AddonManagement Addon ignores
 AddOns/GeneratedAddonInclude.ahk
 AddOns/IC_Addon_Management/AddonManagement.json
-LastGUID*.json
-Current*.json
-.idea/vcs.xml
 AddOns/IC_BrivGemFarm_Performance/LastGUID_BrivGemFarm.json
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/misc.xml
