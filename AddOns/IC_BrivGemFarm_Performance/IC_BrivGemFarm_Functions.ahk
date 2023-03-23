@@ -189,7 +189,7 @@ class IC_BrivGemFarm_Class
                 ;if g_BrivUserSettings[ "Fkeys" ]
                     ;keyspam := g_SF.GetFormationFKeys(formationModron)
                 doKeySpam := true
-                keyspam.Push(this.DoPartySetup())
+                keyspam.Push(this.DoPartySetup(1))
                 keyspam.Push("{ClickDmg}")
                 lastResetCount := g_SF.Memory.ReadResetsCount()
                 g_SF.Memory.ActiveEffectKeyHandler.Refresh()
@@ -213,7 +213,7 @@ class IC_BrivGemFarm_Class
                 this.ModronResetCheck()
                 keyspam = Array()
             }
-            this.DoPartySetupAFter()
+            this.DoPartySetup()
             if(CurrentZone > PreviousZone) ; needs to be greater than because offline could stacking getting stuck in descending zones.
             {
                 PreviousZone := CurrentZone
@@ -594,59 +594,78 @@ class IC_BrivGemFarm_Class
 
         Returns:
     */
-    DoPartySetup()
+    DoPartySetup( initial := 0)
     {
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
         minLevels := {}, maxLevels := {}
         minLevels[58] := 80, maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
         minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
         minLevels[91] := 1, maxLevels[91] := 310 ; Widdle 260 310 350
-        minLevels[75] := 220, maxLevels[75] := 220 ; Hewmann 40 200 220 360
+        minLevels[75] := 220, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
+        minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
+        minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
         minLevels[115] := 100, maxLevels[115] := 100 ; Virgil
         minLevels[114] := 1, maxLevels[114] := 1 ; Kent
+        minLevels[98] := 1, maxLevels[98] := 1550 ; Gazrick
         minLevels[79] := 1, maxLevels[79] := 1 ; Shaka
         minLevels[81] := 1, maxLevels[81] := 1 ; Selise
-        minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
+        minLevels[56] := 165, maxLevels[56] := 165 ; Havilar
         minLevels[70] := 90, maxLevels[70] := 90 ; Ezmeralda 90 315
         minLevels[12] := 65, maxLevels[12] := 65 ; Arkhan
         minLevels[4] := 1, maxLevels[4] := 2150 ; Jarlaxle
         minLevels[39] := 1, maxLevels[39] := 3440 ; Paultin
         minLevels[113] := 1, maxLevels[113] := 1400 ; Egbert
         minLevels[94] := 1, maxLevels[94] := 2640 ; Rust
-        champIDs := [58, 47, 91, 75, 115, 114, 79, 81, 52]
-        keyspam := ["{q}"]
-        for k, champID in champIDs
+        minLevels[30] := 1, maxLevels[30] := 2020 ; Azaka
+        ; Level up speed champs first, priority to getting Briv, Shandie, Hew Maan, Nahara, Sentry, Virgil speed effects
+        if (initial)
         {
-            if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < minLevels[champID])
-                keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
-        }
-        setupDone := False
-        while(!setupDone)
-        {
-            g_SF.DirectedInput(,, keyspam*)
-            for champID, champMinLevel in minLevels
+            champIDs := [58, 47, 91, 75, 102, 52, 115, 114, 98, 79, 81]
+            keyspam := ["{q}"]
+            for k, champID in champIDs
             {
-                if (g_SF.IsChampInFormation(champID, formationFavorite1))
+                if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < minLevels[champID])
+                    keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
+            }
+            setupDone := False
+            while(!setupDone)
+            {
+                g_SF.DirectedInput(,, keyspam*)
+                for champID, champMinLevel in minLevels
                 {
-                    level := g_SF.Memory.ReadChampLvlByID(champID)
-                    Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
-                    if (level >= champMinLevel)
+                    if (g_SF.IsChampInFormation(champID, formationFavorite1))
                     {
-                        for k, v in keyspam
+                        level := g_SF.Memory.ReadChampLvlByID(champID)
+                        Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
+                        if (level >= champMinLevel)
                         {
-                            if (v == Fkey)
-                                keyspam.Delete(k)
+                            for k, v in keyspam
+                            {
+                                if (v == Fkey)
+                                    keyspam.Delete(k)
+                            }
                         }
                     }
                 }
+                if (keyspam.Length() == 1)
+                    setupDone := true
+                Sleep, 20
             }
-            if (keyspam.Length() == 1)
-                setupDone := true
-            Sleep, 20
+            g_SF.DirectedInput(hold:=0,, keyspam*)
+            if(g_BrivUserSettings[ "Fkeys" ])
+            {
+                g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
+            }
+            g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
+            if (g_SF.ShouldDashWait())
+                g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
+            g_SF.ToggleAutoProgress( 1, false, true )
+            return
         }
+        ; Level up speed champs, level up %gf champs once
         if(g_BrivUserSettings[ "BrivMaxLevel" ] >= 170)
             minLevels[58] := 170
-        champIDs := [58, 47, 91, 75, 115, 114, 79, 81, 52, 70, 12, 4, 39, 113, 94]
+        champIDs := [58, 47, 91, 75, 102, 52, 115, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
         keyspam := []
         for k, champID in champIDs
         {
@@ -678,35 +697,13 @@ class IC_BrivGemFarm_Class
                 setupDone := true
             Sleep, 20
         }
-        g_SF.DirectedInput(hold:=0,, keyspam*)
-        if(g_BrivUserSettings[ "Fkeys" ])
-        {
-            g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
-        }
-        g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
-        if (g_SF.ShouldDashWait())
-            g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
-        g_SF.ToggleAutoProgress( 1, false, true )
-        return keyspam*
-    }
-
-    DoPartySetupAfter()
-    {
-        maxLevels := {}
-        maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
+        ; Level up all champs to specified max level
         if (maxLevels[58] < 170)
         {
             targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
             if g_SF.Memory.ReadSBStacks() >= targetStacks
                 maxLevels[58] := 170
         }
-        maxLevels[91] := 310 ; Widdle 260 310 350
-        maxLevels[75] := 220 ; Hewmann 220 360
-        maxLevels[4] := 2150 ; Jarlaxle
-        maxLevels[39] := 3440 ; Paultin
-        maxLevels[113] := 1400 ; Egbert
-        maxLevels[94] := 2640 ; Rust
-        formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
         for champID, champMaxLevel in maxLevels
         {
             if (g_SF.IsChampInFormation(champID, formationFavorite1))
@@ -720,6 +717,7 @@ class IC_BrivGemFarm_Class
                 }
             }
         }
+        return keyspam*
     }
 
     ;Waits for modron to reset. Closes IC if it fails.
