@@ -1274,29 +1274,11 @@ class IC_SharedFunctions_Class
     {
         for k, v in formation
         {
-            if ( v != -1 AND v != 91 AND v != 47 AND v != 75 AND v != 115)
+            if ( v != -1 )
             {
-                if( v == 58)
-                {
-                    levelBriv := this.Memory.ReadChampLvlByID(58) ; Briv
-                    if (levelBriv < 1300)
-                        return False
-                }
-                if( v == 113)
-                {
-                    levelEgbert := this.Memory.ReadChampLvlByID(113) ; Egbert
-                    if (levelEgbert < 1400)
-                        return False
-                }
-                if( v == 94)
-                {
-                    levelRust := this.Memory.ReadChampLvlByID(94) ; Rust
-                    if (levelRust < 2640)
-                        return False
-                }
-                ;hasSeatUpgrade := this.Memory.ReadBoughtLastUpgrade(this.Memory.ReadChampSeatByID(v))
-                ;if (!hasSeatUpgrade)
-                    ;return false
+                hasSeatUpgrade := this.Memory.ReadBoughtLastUpgrade(this.Memory.ReadChampSeatByID(v))
+                if (!hasSeatUpgrade)
+                    return false
             }
         }
         return true

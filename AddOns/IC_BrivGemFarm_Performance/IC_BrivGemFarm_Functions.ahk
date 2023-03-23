@@ -590,21 +590,23 @@ class IC_BrivGemFarm_Class
     /*  DoPartySetup - When gem farm is started or a zone is reloaded, this is called to set up the primary party.
                        Levels Shandie and Briv, waits for Shandie Dash to start, completes the quests of the zone and then go time.
 
-        Parameters:
+        Parameters: init - On first pass, levels up speed champs first
 
-        Returns:
+        Returns: array - Leftover keys to level up non-speed champs in the Q formation
     */
-    DoPartySetup( initial := 0)
+    DoPartySetup( init := 0)
     {
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
         minLevels := {}, maxLevels := {}
-        minLevels[58] := 80, maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
+        maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
+        minLevels[58] := maxLevels[58] >= 170 ? 170 : 80
         minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
         minLevels[91] := 1, maxLevels[91] := 310 ; Widdle 260 310 350
         minLevels[75] := 220, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
         minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
         minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
         minLevels[115] := 100, maxLevels[115] := 100 ; Virgil
+        minLevels[89] := 1, maxLevels[89] := 1 ; D'hani
         minLevels[114] := 1, maxLevels[114] := 1 ; Kent
         minLevels[98] := 1, maxLevels[98] := 1550 ; Gazrick
         minLevels[79] := 1, maxLevels[79] := 1 ; Shaka
@@ -618,71 +620,42 @@ class IC_BrivGemFarm_Class
         minLevels[94] := 1, maxLevels[94] := 2640 ; Rust
         minLevels[30] := 1, maxLevels[30] := 2020 ; Azaka
         ; Level up speed champs first, priority to getting Briv, Shandie, Hew Maan, Nahara, Sentry, Virgil speed effects
-        if (initial)
+        if (init)
         {
-            champIDs := [58, 47, 91, 75, 102, 52, 115, 114, 98, 79, 81]
-            keyspam := ["{q}"]
+            g_SF.DirectedInput(,, "{q}") ; switch to Briv in slot 5
+            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81]
+            keyspam := []
             for k, champID in champIDs
             {
                 if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < minLevels[champID])
                     keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
             }
-            setupDone := False
-            while(!setupDone)
-            {
-                g_SF.DirectedInput(,, keyspam*)
-                for champID, champMinLevel in minLevels
-                {
-                    if (g_SF.IsChampInFormation(champID, formationFavorite1))
-                    {
-                        level := g_SF.Memory.ReadChampLvlByID(champID)
-                        Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
-                        if (level >= champMinLevel)
-                        {
-                            for k, v in keyspam
-                            {
-                                if (v == Fkey)
-                                    keyspam.Delete(k)
-                            }
-                        }
-                    }
-                }
-                if (keyspam.Length() == 1)
-                    setupDone := true
-                Sleep, 20
-            }
-            g_SF.DirectedInput(hold:=0,, keyspam*)
-            if(g_BrivUserSettings[ "Fkeys" ])
-            {
-                g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
-            }
-            g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
-            if (g_SF.ShouldDashWait())
-                g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
-            g_SF.ToggleAutoProgress( 1, false, true )
-            return
+            StartTime := A_TickCount
+            ElapsedTime := 0
         }
-        ; Level up speed champs, level up %gf champs once
-        if(g_BrivUserSettings[ "BrivMaxLevel" ] >= 170)
-            minLevels[58] := 170
-        champIDs := [58, 47, 91, 75, 102, 52, 115, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
-        keyspam := []
-        for k, champID in champIDs
+        else
         {
-            if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < maxLevels[champID])
-                keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
+            ; Level up all champs to the specified max level
+            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
+            if (maxLevels[58] < 170)
+            {
+                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
+                if g_SF.Memory.ReadSBStacks() >= targetStacks
+                    maxLevels[58] := 170
+            }
         }
         setupDone := False
         while(!setupDone)
         {
-            g_SF.SetFormation(g_BrivUserSettings)
-            for champID, champMinLevel in minLevels
+            if (init)
+                g_SF.DirectedInput(,, keyspam*) ; level up all champs once
+            for champID, targetLevel in init ? minLevels : maxLevels
             {
                 if (g_SF.IsChampInFormation(champID, formationFavorite1))
                 {
                     level := g_SF.Memory.ReadChampLvlByID(champID)
                     Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
-                    if (level >= champMinLevel)
+                    if (init AND level >= targetLevel)
                     {
                         for k, v in keyspam
                         {
@@ -690,33 +663,38 @@ class IC_BrivGemFarm_Class
                                 keyspam.Delete(k)
                         }
                     }
+                    else if (!init AND level < targetLevel)
+                    {
+                        g_SF.DirectedInput(,, Fkey) ; level up single champ once
+                        return keyspam*
+                    }
                 }
             }
-            g_SF.DirectedInput(,, keyspam*)
-            if (keyspam.Length() == 0)
+            g_SF.SetFormation(g_BrivUserSettings) ; switch to E formation if necessary
+            if (!init)
+                return keyspam*
+            if (keyspam.Length() == 0 OR (A_TickCount - StartTime) > 5000)
                 setupDone := true
             Sleep, 20
         }
-        ; Level up all champs to specified max level
-        if (maxLevels[58] < 170)
+        g_SF.DirectedInput(hold:=0,, keyspam*)
+        if(g_BrivUserSettings[ "Fkeys" ])
         {
-            targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
-            if g_SF.Memory.ReadSBStacks() >= targetStacks
-                maxLevels[58] := 170
-        }
-        for champID, champMaxLevel in maxLevels
-        {
-            if (g_SF.IsChampInFormation(champID, formationFavorite1))
+            for k, v in formationFavorite1
             {
-                level := g_SF.Memory.ReadChampLvlByID(champID)
-                Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
-                if (level < champMaxLevel)
+                for k1, v1 in champIDs
                 {
-                    g_SF.DirectedInput(,, Fkey) ;keysdownup
-                    return
+                    if (v <= 0 OR v == v1)
+                        continue 2
                 }
+                keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(v) . "}")
             }
+            g_SF.DirectedInput(,release :=0, keyspam*) ; keysdown
         }
+        g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
+        if (g_SF.ShouldDashWait())
+            g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
+        g_SF.ToggleAutoProgress( 1, false, true )
         return keyspam*
     }
 
