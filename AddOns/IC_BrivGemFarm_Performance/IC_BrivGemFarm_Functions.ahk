@@ -605,6 +605,8 @@ class IC_BrivGemFarm_Class
         minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
         minLevels[91] := 1, maxLevels[91] := 310 ; Widdle 260 310 350
         minLevels[75] := 220, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
+        minLevels[91] := 175, maxLevels[91] := 260 ; Widdle 260 310 350
+        minLevels[75] := 175, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
         minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
         minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
         minLevels[115] := 100, maxLevels[115] := 100 ; Virgil
@@ -684,7 +686,7 @@ class IC_BrivGemFarm_Class
         {
             for k, v in formationFavorite1
             {
-                for k1, v1 in champIDs
+                for k1, v1 in [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
                 {
                     if (v <= 0 OR v == v1)
                         continue 2
