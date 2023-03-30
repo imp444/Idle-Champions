@@ -350,18 +350,21 @@ class IC_BrivGemFarm_Class
     /*  StackRestart - Stops progress and wwitches to appropriate party to prepare for stacking Briv's SteelBones.
                        Falls back from a boss zone if necessary.
 
-    Parameters:
+    Parameters: waitForTransition - Skips transition
 
     Returns:
     */
     ; Stops progress and switches to appropriate party to prepare for stacking Briv's SteelBones.
-    StackFarmSetup()
+    StackFarmSetup( waitForTransition := 1)
     {
         g_SF.KillCurrentBoss()
         inputValues := "{w}" ; Stack farm formation hotkey
         g_SF.DirectedInput(,, inputValues )
-        g_SF.WaitForTransition( inputValues )
-        g_SF.ToggleAutoProgress( 0 , false, true )
+        if (waitForTransition)
+        {
+            g_SF.WaitForTransition( inputValues )
+            g_SF.ToggleAutoProgress( 0 , false, true )
+        }
         StartTime := A_TickCount
         ElapsedTime := 0
         counter := 0
@@ -415,8 +418,7 @@ class IC_BrivGemFarm_Class
         while ( stacks < targetStacks AND retryAttempt < 10 )
         {
             retryAttempt++
-            this.StackFarmSetup()
-            g_SF.ToggleAutoProgress( 1 , false, true ) ; 
+            this.StackFarmSetup(0) ; skip transition
             g_SF.CurrentZone := g_SF.Memory.ReadCurrentZone() ; record current zone before saving for bad progression checks
             modronResetZone := g_SF.Memory.GetModronResetArea()
             if(modronResetZone != "" AND g_SF.CurrentZone > modronResetZone)
