@@ -603,8 +603,6 @@ class IC_BrivGemFarm_Class
         maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
         minLevels[58] := maxLevels[58] >= 170 ? 170 : 80
         minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
-        minLevels[91] := 1, maxLevels[91] := 310 ; Widdle 260 310 350
-        minLevels[75] := 220, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
         minLevels[91] := 175, maxLevels[91] := 260 ; Widdle 260 310 350
         minLevels[75] := 175, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
         minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
