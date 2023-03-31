@@ -333,7 +333,7 @@ class IC_BrivGemFarm_Class
     {
         if this.ShouldOfflineStack()
         {
-            return g_BrivUserSettings[ "EarlyStacking" ] ? g_SF.Memory.ReadSBStacks() : g_SF.Memory.ReadHasteStacks() + g_SF.Memory.ReadSBStacks()
+            return g_BrivUserSettings[ "AlwaysStackSB" ] ? g_SF.Memory.ReadSBStacks() : g_SF.Memory.ReadHasteStacks() + g_SF.Memory.ReadSBStacks()
         }
         else
         {

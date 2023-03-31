@@ -17,7 +17,7 @@ Gui, ICScriptHub:Add, Checkbox, vFkeysCheck Checked%Fkeys% x15 y+5, Level Champi
 Gui, ICScriptHub:Add, Checkbox, vStackFailRecoveryCheck Checked%StackFailRecovery% x15 y+5, Enable manual resets to recover from failed Briv stacking?
 Gui, ICScriptHub:Add, Checkbox, vDisableDashWaitCheck Checked%DisableDashWait% x15 y+5, Disable Dash Wait?
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Checkbox, vEarlyStackingCheck Checked%vEarlyStacking% x15 y+5, Early Stacking?
+Gui, ICScriptHub:Add, Checkbox, vAlwaysStackSBCheck Checked%vAlwaysStackSB% x15 y+5, Always Stack SB?
 if(g_isDarkMode)
     Gui, ICScriptHub:Font, g_CustomColor
 Gui, ICScriptHub:Add, Edit, vNewStackZone x15 y+5 w50, % g_BrivUserSettings[ "StackZone" ]
@@ -106,6 +106,7 @@ class IC_BrivGemFarm_Component
         GUIFunctions.AddToolTip("BrivGemFarmStopButton", "Stop Gem Farm")
         GUIFunctions.AddToolTip("BrivGemFarmConnectButton", "Reconnect to Gem Farm Script. [If the stats have stopped updating, click this to start updating them again]")
         GUIFunctions.AddToolTip("BrivGemFarmSaveButton", "Save Gem Farm Settings")
+        GUIFunctions.AddToolTip("AlwaysStackSBCheck", "Always farm SB stacks right after reaching the stacking zone (for single run early stacking)")
     }
 
     UpdateGUICheckBoxes()
@@ -118,7 +119,7 @@ class IC_BrivGemFarm_Component
         GuiControl,ICScriptHub:, OpenSilversCheck, % g_BrivUserSettings[ "OpenSilvers" ] 
         GuiControl,ICScriptHub:, OpenGoldsCheck, % g_BrivUserSettings[ "OpenGolds" ] 
         GuiControl,ICScriptHub:, DisableDashWaitCheck, % g_BrivUserSettings[ "DisableDashWait" ]
-        GuiControl,ICScriptHub:, EarlyStackingCheck, % g_BrivUserSettings[ "EarlyStacking" ]
+        GuiControl,ICScriptHub:, AlwaysStackSBCheck, % g_BrivUserSettings[ "AlwaysStackSB" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsCheck, % g_BrivUserSettings[ "AutoCalculateBrivStacks" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsWorstCaseCheck, % g_BrivUserSettings[ "AutoCalculateWorstCase" ]
     }
@@ -251,7 +252,7 @@ class IC_BrivGemFarm_Component
         g_BrivUserSettings[ "TargetStacks" ] := StrReplace(NewTargetStacks, ",")
         g_BrivUserSettings[ "RestartStackTime" ] := StrReplace(NewRestartStackTime, ",")
         g_BrivUserSettings[ "DisableDashWait" ] := DisableDashWaitCheck
-        g_BrivUserSettings[ "EarlyStacking" ] := EarlyStackingCheck
+        g_BrivUserSettings[ "AlwaysStackSB" ] := AlwaysStackSBCheck
         g_BrivUserSettings[ "DoChests" ] := DoChestsCheck
         g_BrivUserSettings[ "BuySilvers" ] := BuySilversCheck
         g_BrivUserSettings[ "BuyGolds" ] := BuyGoldsCheck
