@@ -13,11 +13,13 @@ Gui, ICScriptHub:Add, ListView, AltSubmit Checked -Hdr -Multi x15 y+5 w120 h320 
 GUIFunctions.UseThemeListViewBackgroundColor("ProcessAffinityView")
 IC_ProcessAffinity_Component.BuildCoreList()
 
+; Save button
 ProcessAffinitySave()
 {
-    IC_ProcessAffinity_Functions.SaveSettings()
+    IC_ProcessAffinity_Component.SaveSettings()
 }
 
+; ViewList
 ProcessAffinityView()
 {
     if (A_GuiEvent == "I")
@@ -35,11 +37,15 @@ Class IC_ProcessAffinity_Component
     BuildCoreList()
     {
         EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
+        ProcessorCount := 1
+        this.ProcessorCount := ProcessorCount
         if (ProcessorCount > 64) ; TODO: Support for CPU Groups
         {
             GuiControl, Disable, ProcessAffinitySave
             return
         }
+        this.LoadSettings()
+        ;MsgBox, % this.Settings["ProcessAffinityMask"]
         isChecked := "Check" ; TODO: Load from file
         LV_Add(isChecked, "All processors")
         loop, %ProcessorCount%
@@ -48,25 +54,38 @@ Class IC_ProcessAffinity_Component
         }
     }
 
-    ; Loads settings from the addon's setting.json file. TODO
+    ; Loads settings from the addon's setting.json file.
     LoadSettings()
     {
         this.Settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Settings.json")
         if(this.Settings == "")
         {
             this.Settings := {}
-            this.Settings["ProcessAffinityBitMask"] := True
-            this.SaveSettings()
+            mask := 1 << this.ProcessorCount - 1
+            mask := ~mask
+            mask += 1 << this.ProcessorCount - 1
+            this.Settings["ProcessAffinityMask"] := mask
         }
-        if(this.Settings["ProcessAffinityBitMask"] == "")
-            this.Settings["ProcessAffinityBitMask"] := True
-        GuiControl,ICScriptHub:, g_ProcessAffinityCheckbox, % this.Settings["ProcessAffinityBitMask"]
+        else if (this.Settings["ProcessAffinityMask"] == "")
+            this.Settings["ProcessAffinityMask"] := 2 ** this.ProcessorCount - 1
     }
 
-     ; Saves settings to addon's setting.json file. TODO
+     ; Saves settings to addon's setting.json file.
     SaveSettings()
     {
-        this.Settings["ProcessAffinityBitMask"] := g_ProcessAffinityCheckbox
+        coreMask := 0
+        rowNumber := 1 ; This causes the first loop iteration to start the search at the top of the list.
+        loop
+        {
+            nextChecked := LV_GetNext(RowNumber, "C")
+            if (not nextChecked)
+                break
+            rowNumber := nextChecked ; Resume the search at the row after that found by the previous iteration.
+            coreMask += 2 ** (rowNumber - 2)
+        }
+        if (coremask == 0)
+            return
+        this.Settings["ProcessAffinityMask"] := coreMask ; int64
         g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings )
     }
 
