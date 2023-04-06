@@ -37,7 +37,7 @@ Class IC_ProcessAffinity_Component
     BuildCoreList()
     {
         EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
-        ProcessorCount := 1
+        ProcessorCount := 32
         this.ProcessorCount := ProcessorCount
         if (ProcessorCount > 64) ; TODO: Support for CPU Groups
         {
@@ -45,12 +45,17 @@ Class IC_ProcessAffinity_Component
             return
         }
         this.LoadSettings()
-        ;MsgBox, % this.Settings["ProcessAffinityMask"]
-        isChecked := "Check" ; TODO: Load from file
-        LV_Add(isChecked, "All processors")
+        LV_Add("Check", "All processors") ; First check all boxes
         loop, %ProcessorCount%
         {
-            LV_Add(isChecked, "CPU " . A_Index - 1)
+            LV_Add("Check", "CPU " . A_Index - 1)
+        }
+        settings := this.Settings["ProcessAffinityMask"]
+        loop, %ProcessorCount% ; Uncheck boxes
+        {
+            checked := (settings & (2 ** (A_Index - 1))) > 0
+            if (!checked)
+                this.Update(A_Index + 1, 0)
         }
     }
 
@@ -59,15 +64,16 @@ Class IC_ProcessAffinity_Component
     {
         this.Settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Settings.json")
         if(this.Settings == "")
-        {
             this.Settings := {}
-            mask := 1 << this.ProcessorCount - 1
-            mask := ~mask
-            mask += 1 << this.ProcessorCount - 1
-            this.Settings["ProcessAffinityMask"] := mask
+        if (this.Settings["ProcessAffinityMask"] == "")
+        {
+            coreMask := 0
+            loop, % this.ProcessorCount ; Sum up all bits
+            {
+                coreMask += 2 ** (A_Index - 1)
+            }
+            this.Settings["ProcessAffinityMask"] := coreMask
         }
-        else if (this.Settings["ProcessAffinityMask"] == "")
-            this.Settings["ProcessAffinityMask"] := 2 ** this.ProcessorCount - 1
     }
 
      ; Saves settings to addon's setting.json file.
@@ -85,20 +91,23 @@ Class IC_ProcessAffinity_Component
         }
         if (coremask == 0)
             return
-        this.Settings["ProcessAffinityMask"] := coreMask ; int64
+        this.Settings["ProcessAffinityMask"] := coreMask
         g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings )
     }
 
     ; Update checkboxes
     Update(checkBoxIndex := 0, on := 1)
     {
-        if (checkBoxIndex == 1)
+        if (checkBoxIndex == 1) ; Toggle all checkbox
             this.ToggleAllCores(on)
         else if (!on)
+        {
+            LV_Modify(checkBoxIndex, "-Check")
             LV_Modify(1, "-Check")
+        }
         else if (this.AreAllCoresChecked())
             LV_Modify(1, "Check")
-        if (LV_GetNext(,"Checked") == 0)
+        if (LV_GetNext(,"Checked") == 0) ; Disable save if no cores are selected
             GuiControl, Disable, ProcessAffinitySave
         else
             GuiControl, Enable, ProcessAffinitySave
@@ -109,7 +118,7 @@ Class IC_ProcessAffinity_Component
     {
         if (!on AND !this.AreAllCoresChecked())
             return
-        loop % LV_GetCount() - 1 ; Skip the all core toggle chechbox
+        loop % LV_GetCount() - 1 ; Skip the toggle all checkbox
         {
             LV_Modify(A_Index + 1, on ? "Check" : "-Check")
         }
@@ -121,8 +130,8 @@ Class IC_ProcessAffinity_Component
         rowNumber := 1 ; This causes the first loop iteration to start the search at the top of the list.
         loop
         {
-            nextChecked := LV_GetNext(RowNumber, "C")
-            if (nextChecked - rowNumber > 1)
+            nextChecked := LV_GetNext(rowNumber, "C")
+            if (nextChecked - rowNumber > 1) ; Skipped over an unchecked box
                 return false
             if (not rowNumber OR rowNumber == LV_GetCount()) ; There are no more selected rows.
                 return true
