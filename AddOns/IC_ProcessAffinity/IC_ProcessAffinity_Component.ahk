@@ -45,17 +45,17 @@ Class IC_ProcessAffinity_Component
             return
         }
         this.LoadSettings()
-        LV_Add("Check", "All processors") ; First check all boxes
+        LV_Add(, "All processors") ; Create unchecked boxes
         loop, %ProcessorCount%
         {
-            LV_Add("Check", "CPU " . A_Index - 1)
+            LV_Add(, "CPU " . A_Index - 1)
         }
         settings := this.Settings["ProcessAffinityMask"]
-        loop, %ProcessorCount% ; Uncheck boxes
+        loop, %ProcessorCount% ; Check boxes
         {
             checked := (settings & (2 ** (A_Index - 1))) > 0
-            if (!checked)
-                this.Update(A_Index + 1, 0)
+            if (checked)
+                LV_Modify(A_Index + 1, "Check")
         }
     }
 
@@ -80,13 +80,13 @@ Class IC_ProcessAffinity_Component
     SaveSettings()
     {
         coreMask := 0
-        rowNumber := 1 ; This causes the first loop iteration to start the search at the top of the list.
-        loop
+        rowNumber := 1
+        loop ; Sum up all checked boxes as an integer || signed int for 64 cores
         {
             nextChecked := LV_GetNext(RowNumber, "C")
             if (not nextChecked)
                 break
-            rowNumber := nextChecked ; Resume the search at the row after that found by the previous iteration.
+            rowNumber := nextChecked
             coreMask += 2 ** (rowNumber - 2)
         }
         if (coremask == 0)
@@ -101,11 +101,8 @@ Class IC_ProcessAffinity_Component
         if (checkBoxIndex == 1) ; Toggle all checkbox
             this.ToggleAllCores(on)
         else if (!on)
-        {
-            LV_Modify(checkBoxIndex, "-Check")
             LV_Modify(1, "-Check")
-        }
-        else if (this.AreAllCoresChecked())
+        if (this.AreAllCoresChecked() AND (LV_GetNext(,"Checked") == 2))
             LV_Modify(1, "Check")
         if (LV_GetNext(,"Checked") == 0) ; Disable save if no cores are selected
             GuiControl, Disable, ProcessAffinitySave
