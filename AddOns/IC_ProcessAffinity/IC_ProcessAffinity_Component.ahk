@@ -8,9 +8,10 @@ Gui, ICScriptHub:Font, w700
 Gui, ICScriptHub:Add, Text, , Core affinity:
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Button , x+10 vProcessAffinitySave gProcessAffinitySave, Save
+Gui, ICScriptHub:Add, Text, vProcessAffinityText x+5 w125
 
 GUIFunctions.UseThemeTextColor("TableTextColor")
-Gui, ICScriptHub:Add, ListView, AltSubmit Checked -Hdr -Multi x15 y+5 w120 h320 vProcessAffinityView gProcessAffinityView, CoreID
+Gui, ICScriptHub:Add, ListView, AltSubmit Checked -Hdr -Multi x15 y+15 w120 h320 vProcessAffinityView gProcessAffinityView, CoreID
 GUIFunctions.UseThemeListViewBackgroundColor("ProcessAffinityView")
 IC_ProcessAffinity_Component.BuildCoreList()
 
@@ -38,16 +39,17 @@ Class IC_ProcessAffinity_Component
     BuildCoreList()
     {
         EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
-        ;ProcessorCount := 64
         this.ProcessorCount := ProcessorCount
         if (ProcessorCount == 0)
         {
             GuiControl, Disable, ProcessAffinitySave
+            GuiControl, ICScriptHub:, ProcessAffinityText, No cores found.
             return
         }
         else if (ProcessorCount > 64) ; TODO: Support for CPU Groups
         {
             GuiControl, Disable, ProcessAffinitySave
+            GuiControl, ICScriptHub:, ProcessAffinityText, > 64 CPUs not supported.
             return
         }
         this.LoadSettings()
