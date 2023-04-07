@@ -9,6 +9,7 @@ Gui, ICScriptHub:Add, Text, , Core affinity:
 Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Button , x+10 vProcessAffinitySave gProcessAffinitySave, Save
 
+GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, AltSubmit Checked -Hdr -Multi x15 y+5 w120 h320 vProcessAffinityView gProcessAffinityView, CoreID
 GUIFunctions.UseThemeListViewBackgroundColor("ProcessAffinityView")
 IC_ProcessAffinity_Component.BuildCoreList()
@@ -37,9 +38,14 @@ Class IC_ProcessAffinity_Component
     BuildCoreList()
     {
         EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
-        ProcessorCount := 32
+        ;ProcessorCount := 64
         this.ProcessorCount := ProcessorCount
-        if (ProcessorCount > 64) ; TODO: Support for CPU Groups
+        if (ProcessorCount == 0)
+        {
+            GuiControl, Disable, ProcessAffinitySave
+            return
+        }
+        else if (ProcessorCount > 64) ; TODO: Support for CPU Groups
         {
             GuiControl, Disable, ProcessAffinitySave
             return
@@ -53,10 +59,11 @@ Class IC_ProcessAffinity_Component
         settings := this.Settings["ProcessAffinityMask"]
         loop, %ProcessorCount% ; Check boxes
         {
-            checked := (settings & (2 ** (A_Index - 1))) > 0
+            checked := (settings & (2 ** (A_Index - 1))) != 0
             if (checked)
                 LV_Modify(A_Index + 1, "Check")
         }
+        this.SaveSettings()
     }
 
     ; Loads settings from the addon's setting.json file.
