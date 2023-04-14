@@ -603,7 +603,8 @@ class IC_BrivGemFarm_Class
     */
     DoPartySetup( init := 0)
     {
-        g_SharedData.LoopString := "Leveling champions"
+        if (init)
+            g_SharedData.LoopString := "Leveling champions"
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
         minLevels := {}, maxLevels := {}
         maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
