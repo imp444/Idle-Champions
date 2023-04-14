@@ -603,17 +603,18 @@ class IC_BrivGemFarm_Class
         maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
         minLevels[58] := maxLevels[58] >= 170 ? 170 : 80
         minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
-        minLevels[91] := 175, maxLevels[91] := 260 ; Widdle 260 310 350
+        minLevels[91] := 1, maxLevels[91] := 260 ; Widdle 260 310 350
         minLevels[75] := 175, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
         minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
         minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
         minLevels[115] := 100, maxLevels[115] := 100 ; Virgil
         minLevels[89] := 1, maxLevels[89] := 1 ; D'hani
         minLevels[114] := 1, maxLevels[114] := 1 ; Kent
-        minLevels[98] := 1, maxLevels[98] := 1550 ; Gazrick
+        minLevels[98] := 1, maxLevels[98] := 1 ; Gazrick 1540
         minLevels[79] := 1, maxLevels[79] := 1 ; Shaka
         minLevels[81] := 1, maxLevels[81] := 1 ; Selise
         minLevels[56] := 165, maxLevels[56] := 165 ; Havilar
+        minLevels[95] := 100, maxLevels[95] := 100 ; Vi 100 250
         minLevels[70] := 90, maxLevels[70] := 90 ; Ezmeralda 90 315
         minLevels[12] := 65, maxLevels[12] := 65 ; Arkhan
         minLevels[4] := 1, maxLevels[4] := 2150 ; Jarlaxle
@@ -625,20 +626,19 @@ class IC_BrivGemFarm_Class
         if (init)
         {
             g_SF.DirectedInput(,, "{q}") ; switch to Briv in slot 5
-            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81]
+            ;champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95]
+            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 98, 79, 81, 95]
             keyspam := []
             for k, champID in champIDs
             {
                 if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < minLevels[champID])
                     keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
             }
-            StartTime := A_TickCount
-            ElapsedTime := 0
         }
         else
         {
             ; Level up all champs to the specified max level
-            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
+            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95, 56, 70, 12, 4, 39, 113, 94, 30]
             if (maxLevels[58] < 170)
             {
                 targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
@@ -684,7 +684,7 @@ class IC_BrivGemFarm_Class
         {
             for k, v in formationFavorite1
             {
-                for k1, v1 in [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 56, 70, 12, 4, 39, 113, 94, 30]
+                for k1, v1 in [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95, 56, 70, 12, 4, 39, 113, 94, 30]
                 {
                     if (v <= 0 OR v == v1)
                         continue 2
