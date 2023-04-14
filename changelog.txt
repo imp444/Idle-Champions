@@ -1,3 +1,136 @@
+April 13, 2023
+    Fixed bugs with Gem Farm Window Position setting.
+    Added a link to change pointers to the About tab.
+    Fixed MemoryFunctions height adjustment for the tab control.
+
+April 12, 2023
+    Added BPH adjustment based on Nordom XP.
+    Fixed code warnings (non-functional changes).
+    Fixed input boxes on Jimothy tab not using InputBoxTextColor.
+    Fixed profile delete leaving profile selection blank.
+    Fixed bug that allowed addons to be moved below addons that depended on it.
+
+April 11, 2023
+    Fixed bugs and added improvements for new features such as the gem farm profiles.
+    Added sleeps to many busy wait cycles to reduce CPU usage.
+    Removed Potato addon (above fixes implement potato into the default script).
+
+April 8, 2023
+    Added Profiles for BrivGemFarm.
+    Fixed how the chest purchaser ComboBox functions.
+
+April 7, 2023
+    Added incremental area increase for failed stacking to help prevent seasonal buffs or infinite stacking issues.
+    Updated imports to include typing for collections. 
+    Updated Dictionary and List lookups to use appropriate memory sizes.
+    Updated GameObjectStructure to handle differing memory based on collection types.
+    Updated MemoryFunctions to remove special case dictionary lookups and use new GameObjectStructure.
+    Added Familiar-related functions to MemoryFunctions.
+    Added field familiar checks on script startup. No more gem farm with familiars in W formation.
+    Renamed GetChestCountByID to ReadChestCountByID.
+    Refactored start up checks so it no longer continues to show all failed checks when one is canceled.
+    Added an Imports Version function in SharedFunctions.
+    Added IsChampInFavoriteFormation function to SharedFunctions.
+    Modified worst case stacking setting to be 1.15x average instead of actual worst case and uses best case for 99.6% or higher jumps.
+    Added check for the failed offline progress message that will instantly restart instead of waiting for timeout of 90s.
+
+April 4, 2023
+    Updated error messages for needing admin or running script from protected location like Program Files.
+    Updated Chest Purchaser addon. (Try the filter in dropdown boxes).
+    Fixed Briv not respecting walk/jump settings after stacking.
+
+April 3, 2023
+    Removed single setting for enabling server calls.
+    Refactored chest buying/opening functions for BrivGemFarm. (Fixes some minor bugs with counts and purchasing).
+    Optimized chest name reading for use with Inventory and Chest Purchaser addons.
+    Updated SharedFunctions to be able to use g_UserSettings. (Required for memory read).
+
+April 2, 2023
+    Added a version requirement to Script Hub to give a more informative error when running AHK without switch statements or running AHK 2.0.
+    Reverted how online stacking works from a boss zone.
+    Offline stacking will fall back a zone to stack if killing the boss fails.
+    Fixed GUI issues such as incorrect text color and poor text alignment with multiple tab rows.
+    Fixed ResetCollections function for pointer classes.
+    Fixed lookup of champID 107 returning ID 106.
+
+April 1, 2023
+    Added Theme Manager addon.
+    Added Active flag memory read for Dialogs.
+    Added memory read function to find a slot by Dialog name.
+    Fixed bugs with PatronID reads.
+
+March 30, 2023
+    Fixed bug where game version was not loading on about page.
+    Updated Imports for v504. (Kartridge/CNE still on 503).
+    Updated Pointers for Steam (v504), EGS (v504), CNE (v503), Kartridge (v503).
+    Added code to help prevent loss of patron.
+    Added more documentation to Example addon:
+        Inter-script communications.
+    Updated ShouldDashWait to respect DashWaitBuffer.
+    Added new loop string so Retreating to change formation does not get stuck as the last message before a modron reset.
+    Removed Autoprogress toggle when going offline. (No longer required).
+    Moved where Autoprogress is started after stacking.
+
+March 28, 2023
+    Fixed bug in GameObjectRefactor that was not properly saving a reference to the pointer object when cloning.
+    Added a warning on BPH when Nodrom is in the party. 
+    Added offsets and handler for Nodrom XP added.
+    Added offsets for the cooldown timer on ultimates.
+    Added ReadUltimateCooldownByItem function to MemoryFunctions.
+    Updated modron reset check to force a reset faster if it fails.
+    Updated/Added champion upgrade related functions to memory reads.
+
+March 27, 2023
+    Updated memory pointers to only build GameObjects once.
+    Updated GameObjectStructures to contain a reference to the memory pointer that built it instead of storing is64bit and baseAddress in each object.
+    Updated MemoryPointer to use a is64bit field instead of a function.
+    Updated this.Memory.GameManager.is64bit() checks to use _MemoryManager.is64bit.
+    Added the ability to reset collection offsets (lists/dictionaries).
+
+March 25, 2023
+    Updated Example Addon.
+        Added documentation and example code for how to build an addon for use with Script Hub. Topics include:
+            Addon file structure.
+            Script Hub's API.
+            Server calls.
+            Themes.
+            Timers and running them automatically with BrivGemFarm.
+            Making functions work in BrivGemFarm (Injection).
+            Adding controls to existing addon tabs.
+
+March 23, 2023
+    Fixed chest string when stacking to show when buying/opening only one type of chest.
+    Simplified ActiveEffectKeyHandler even more.
+    Fixed recursion bug.
+
+March 22, 2023
+    Updated Version Picker's failed write message.
+    Updated 64 bit Imports for v503.
+    Fixed bug where loop text was not setting colors correctly.
+    Added _Memorymanager class.
+        Added Read function to GameObjectStructure to allow Reads to be done from object.Read instead of the MemoryFunction GenericGetValue.
+        Moved GetDictIndexOfKey, ConvQuadToString3 functions to GameObjectStructure.
+        Added SetNames to GameObjectStructure which will add the key names as a value to each object for debugging purposes.
+        Fixed GetDictIndexOfKey to allow keys to be strings.
+        Added functionality where looking up a dictionary values can be done with the key value. Uses above function.
+        Converted GenericGetValue calls to use Read function.
+    Updated FullMemoryFunctions to show champion instead of handler in the list display.
+    Updated how Hero Handlers are loaded.
+    Added documentation on how to update hero handlers.
+    Updated DashWait to use a default of 30s instead of 60s.
+    Added buy/sell chest counts to offline stack loop string.
+
+March 20, 2023
+    Completely refactored memory read structures.
+        Instances of GameObjectStructure can now re-build their structures around list and dictionary indices at run-time.
+        Removed GetGameObjectFromListValues and GetGameObjectFromListValues and GetFullGameObjectFromListOrDictValues functions in favor of indexing style.
+        Updated MemoryFunctions to use the new style.
+        Rewrote multiple functions in MemoryFunctions to be simpler and/or more efficient.
+        Added MemoryPointer and StaticMemoryPointer classes which are used by in pointer classes and reduces code reuse.
+
+March 16, 2023
+    Added memory read capability for reading the count of wasps from Spurt.
+
 March 12, 2023
     Updated the Example Addon with more sample code and documentation (more coming).
     Fixed theme not applying to GameLocationSettings.
@@ -31,15 +164,15 @@ March 7, 2023
 
 March 5, 2023
     Merged huan's updates to allow for hybrid stacking via new options in BrivGF Advanced tab. See the SETTINGS.md file in the BrivGemFarm addon's folder for descriptions of the new settings.
-    Fixed script saying chests were purchased/opened when they werent. (credit: huan)
+    Fixed script saying chests were purchased/opened when they weren't. (credit: huan)
     Updated offline message to indicate how many chests were bought/opened while offline stacking. (credit: huan)
     Updated 64 bit Imports for v499.1. 
-    Moved ParseChestResults from servercalls to shared functions.
+    Moved ParseChestResults from ServerCalls to shared functions.
     Updated function to save shinies found by hero/slot instead of returning a string.
     Created new function GetToolTipTarget in GUIFunctions for finding the ClassNN value of a control.
     Updated chest purchaser addon to use the new parse function. (This loses functionality to show what champ/slot found a shiny. Will return in the future.)
     Updated the stats tab to show found shinies by champ/slot as a mouseover tooltip on the shiny count.
-    Updated some code to better match Scritp Hub's code styling.
+    Updated some code to better match Script Hub's code styling.
     Updated DoChests to share purchased/opened chest counts in SharedData.
     Fixed a bug that broke failed stacking recovery when Auto detect for stacks is enabled but the value in Target Haste stacks is less than the calculated value. 
 
@@ -106,7 +239,7 @@ October 22, 2022
     Updated Imports for v474.1.
     Added bounds check for AffectKeyHandler so bad memory reads do not cause a freeze.
     Updated pointer database (Beta / Steam / EGS).
-    Removed an unused/depricated function for Omin.
+    Removed an unused/deprecated function for Omin.
 
 October 6, 2022
     Updated Imports for v472.1
@@ -173,7 +306,7 @@ August 30, 2022
 
 August 29, 2022
     Added pointer data for Kartridge v465. 
-        Note: It is recommended to remove EOSSDK-Win64-Shipping.dll and GfxPluginEOSLoader_x64.dll from \IdleDragons_Data\Plugins\x86_64 for full pointer compatability.
+        Note: It is recommended to remove EOSSDK-Win64-Shipping.dll and GfxPluginEOSLoader_x64.dll from \IdleDragons_Data\Plugins\x86_64 for full pointer compatibility.
 
 August 28, 2022
     Changed how the Game Location Settings works.
@@ -199,7 +332,7 @@ August 20, 2022
     Updated error message that happens when starting the gem farm script when no adventure is started.
 
 August 18, 2022
-    Updated MemoryRead objects to be simpler in preperation of handling multiple 64 bit game clients.
+    Updated MemoryRead objects to be simpler in preparation of handling multiple 64 bit game clients.
 
 August 16, 2022
     Created v463-Steam branch for temporary handling of new Steam 64 bit client.
@@ -305,7 +438,7 @@ May 21, 2022
     Fixed typo on HeroEffectNames and HeroHandlerIDs for Omin.
 
 May 11, 2022    (Auto-Offsets soft-launch)
-    Added Imports generated by ScritpHubImporter.
+    Added Imports generated by ScriptHubImporter.
     Updated MemoryRead class files to utilize the new Imports.
     Updated MemoryFunctions to use the new MemoryRead classes.
     Added ActiveEffectKeyHandler class for Champion abilities. (Replaces EffectKeyHandler)
@@ -319,7 +452,7 @@ May 11, 2022    (Auto-Offsets soft-launch)
     Added ReadInventoryBuffIDBySlot(), ReadInventoryBuffNameBySlot(), and ReadInventoryBuffCountBySlot() functions to MemoryFunctions.
     Updated MemoryView addon to use above functions.
     Added ReadBaseGameVersion() function to MemoryFunctions.
-    Updated to use above function for servercalls so it does not break on versions with decimals.
+    Updated to use above function for ServerCalls so it does not break on versions with decimals.
     Updated Pointers for CrusadersGameDataSet and DialogManager for game version v435.
     Updated how GameObject handles lists, dictionaries, and hashsets.
     Updated Jimothy addon to use new ActiveEffectHandlers for Havilar imps.
@@ -367,7 +500,7 @@ Feb 24, 2022
         Simplified StackRestart()
         Moved chest opening logic to its own function.
         Simplified some GemFarm() loop logic.
-        Added g_BrivFarmAddonStartFunctions and g_BrivFarmAddonStopFunctions which will be called whenever brivemfarm is run/stopped respectively
+        Added g_BrivFarmAddonStartFunctions and g_BrivFarmAddonStopFunctions which will be called whenever BrivGemFarm is run/stopped respectively
     Added SetThemTextColor function to GUIFunctions.
 
 Feb 17, 2022
@@ -383,7 +516,7 @@ Feb 16, 2022
     Modified GetFormationFKeys function to better handle scenarios where an NPC is saved in the formation.
 
 Feb 15, 2022
-    Added function to check conditonals for if Dash should wait.
+    Added function to check conditionals for if Dash should wait.
     Potato converted to a proper addon.
     Added g_BrivUserSettingsFromAddons for adding settings to the GemFarm script's advanced settings display window.
     Code tidying including removing unused includes.
@@ -411,8 +544,8 @@ Feb 4, 2022
 
 Feb 1, 2022
     Updated how refocus after game load works.
-    Added patron compatability for manual resets.
-    Added system/compatability for "Miniscripts" via BrivGemFarm.
+    Added patron compatibility for manual resets.
+    Added system/compatibility for "Miniscripts" via BrivGemFarm.
     Small bugfixes, typo corrections, and version updates.
 
 Jan 31, 2022
@@ -424,14 +557,14 @@ Jan 31, 2022
     Added DialogManager class including steam/egs offsets for v418.1.
 
 Jan 29, 2022
-    Increased FullMemoryView tab's lista area size.
+    Increased FullMemoryView tab's list area size.
     Updated offsets for Steam/EGS v418.1.
     Updated how loop time resets. (Emmes)
-    * REVERTED: Updated logic for stacking to accomodate early stackers better. (Emmes)
-    Updated Dashwait to occur after stacking to accomodate early stackers better. Use the DashWaitBuffer advanced setting to prevent dashwait after stacking.
+    * REVERTED: Updated logic for stacking to accommodate early stackers better. (Emmes)
+    Updated Dashwait to occur after stacking to accommodate early stackers better. Use the DashWaitBuffer advanced setting to prevent dashwait after stacking.
 
 Jan 24, 2022
-    Addon EffectKey Handler Full Read: A new add on to test effectkey handlers are functioniong properly.
+    Addon EffectKey Handler Full Read: A new add on to test effectkey handlers are functioning properly.
 
 Jan 23, 2022
     Addon Jimothy: Revamped v0.2. Expanded functionality to assist in non-jimothy push or variant runs. See Read Me.
@@ -531,7 +664,7 @@ Jan 9, 2022
     Added more spam reduction when returning to the game from offline stacking.
     Dashwait has changed from not activating when over halfway to the stack zone to not activating within 30 zones of the stack zone.
     DashWaitBuffer setting in BrivGemFarmSettings.json has been changed to modify the default value of 30.
-        WARNING: If currently using a previous verson, this setting will need to be edited or DashWait will likely never activate.
+        WARNING: If currently using a previous version, this setting will need to be edited or DashWait will likely never activate.
     StackFail protection is now activated on every reset (manual or modron). This should help stop lost stacks when in Q formation beyond stack zone. (Testing for verification needed)
     Fixed haste/sb stacks disappearing when game closes (Fix by msde)
     Fixed MemoryRead tab populating with blank data when game closes.
@@ -587,7 +720,7 @@ Jan 1, 2022
 
 Dec 31, 2021
     Fixed class instantiations to not have ()
-    Added extended functions for Briv (RestartAdventure and SetUserCredetials)
+    Added extended functions for Briv (RestartAdventure and SetUserCredentials)
     Added CLR.ahk for interpreting and using managed DLLs (i.e. compiled in C#).
     Included Ionic.Zlib.dll to compress/decompress data.
     Created a DLL wrapper (GzipWrapper.dll) for Ionic that allows use of its static functions.

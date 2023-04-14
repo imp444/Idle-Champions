@@ -1,11 +1,6 @@
 /*
     Extended memory reads
 */
-
-g_TabControlHeight += 305
-GuiControl, ICScriptHub:Move, ModronTabControl, % "w" . g_TabControlWidth . " h" . g_TabControlHeight
-;Gui, show, % "w" . g_TabControlWidth+5 . " h" . g_TabControlHeight+40
-
 Gui, ICScriptHub:Tab, Memory View
 Gui, ICScriptHub:Font, w700
 Gui, ICScriptHub:Add, Text, x15 y+15, Extended Memory Reads:
@@ -55,7 +50,7 @@ class ReadMemoryFunctionsExtended
         GuiControl, ICScriptHub:, ReadFormationNameBySlotID, % "Slot: 0, Name: " . g_SF.Memory.ReadFormationNameBySlot(0)
         GuiControl, ICScriptHub:, ReadGameStartedID, % g_SF.Memory.ReadGameStarted()
         GuiControl, ICScriptHub:, ReadFinishedOfflineProgressWindowID, % g_SF.Memory.ReadOfflineDone()
-        GuiControl, ICScriptHub:, IsSteam, % !g_SF.Memory.GameManager.is64Bit()
+        GuiControl, ICScriptHub:, IsSteam, % !_MemoryManager.is64bit
         GuiControl, ICScriptHub:, ReadAutoProgressToggledID, % g_SF.Memory.ReadAutoProgressToggled()
         GuiControl, ICScriptHub:, ReadGoldStringID, % g_SF.Memory.ReadGoldString()
         GuiControl, ICScriptHub:, FormationInFavoriteOne, % ArrFnc.GetDecFormattedArrayString(g_SF.Memory.GetFormationByFavorite( 1 ))

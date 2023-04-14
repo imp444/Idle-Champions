@@ -1,40 +1,31 @@
 ; EngineSettings class contains IC's EngineSettings class structure. Useful for finding webroot for doing server calls.
-#include %A_LineFile%\..\IC_GameObjectStructure_Class.ahk
-class IC_EngineSettings_Class
+#include %A_LineFile%\..\IC_StaticMemoryPointer_Class.ahk
+class IC_EngineSettings_Class extends IC_StaticMemoryPointer_Class
 {
-    moduleOffset := 0
-    structureOffsets := 0
-    staticOffset := 0
-
-    __new(moduleOffset := 0, staticOffset := 0, structureOffsets := 0)
-    {
-        this.moduleOffset := moduleOffset
-        this.structureOffsets := structureOffsets
-        this.StaticOffset := staticOffset
-        this.Refresh()
-    }
- 
     GetVersion()
     {
-        return "v2.0.2, 2022-08-28, IC v0.463+"  
+        return "v2.1.0, 2023-03-18"
     }
 
     Refresh()
     {
-        this.Main := new _ClassMemory("ahk_exe " . g_userSettings[ "ExeName"], "", hProcessCopy)
-        this.BaseAddress := this.Main.getModuleBaseAddress("mono-2.0-bdwgc.dll")+this.moduleOffset
-        this.UnityGameEngine := {}
-        this.UnityGameEngine.Core := {}
-        this.UnityGameEngine.Core.EngineSettings := new GameObjectStructure(this.structureOffsets)
-        this.UnityGameEngine.Core.EngineSettings.BaseAddress := this.BaseAddress
-        this.UnityGameEngine.Core.EngineSettings.Is64Bit := this.Main.isTarget64bit
-        if(!this.Main.isTarget64bit)
+        this.BaseAddress := _MemoryManager.baseAddress["mono-2.0-bdwgc.dll"]+this.ModuleOffset
+        if (this.Is64Bit != _MemoryManager.is64Bit) ; Build structure one time. 
         {
-            #include *i %A_LineFile%\..\Imports\IC_EngineSettings32_Import.ahk
-        }
-        else
-        {
-            #include *i %A_LineFile%\..\Imports\IC_EngineSettings64_Import.ahk    
+            this.Is64Bit := _MemoryManager.is64bit
+            this.UnityGameEngine := {}
+            this.UnityGameEngine.Core := {}
+            this.UnityGameEngine.Core.EngineSettings := new GameObjectStructure(this.StructureOffsets)
+            this.UnityGameEngine.Core.EngineSettings.BasePtr := this
+            this.UnityGameEngine.Core.EngineSettings.Is64Bit := _MemoryManager.is64Bit
+            if(!_MemoryManager.is64Bit)
+            {
+                #include *i %A_LineFile%\..\Imports\IC_EngineSettings32_Import.ahk
+            }
+            else
+            {
+                #include *i %A_LineFile%\..\Imports\IC_EngineSettings64_Import.ahk    
+            }
         }
     }
 }

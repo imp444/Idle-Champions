@@ -15,13 +15,33 @@ class IC_BrivGemFarm_AdvancedSettings_Component
         g_BrivUserSettings[ "WindowXPositon" ] := OptionSettingEdit_WindowXPositon
         g_BrivUserSettings[ "WindowYPositon" ] := OptionSettingEdit_WindowYPositon
         g_BrivUserSettings[ "BrivMaxLevel" ] := OptionSettingEdit_BrivMaxLevel
-        IC_BrivGemFarm_AdvancedSettings_Functions.UpdateSettings()
+        IC_BrivGemFarm_AdvancedSettings_Functions.UpdateJumpSettings()
         g_SF.WriteObjectToJSON( A_LineFile . "\..\..\IC_BrivGemFarm_Performance\BrivGemFarmSettings.json" , g_BrivUserSettings )
         try ; avoid thrown errors when comobject is not available.
         {
             local SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
             SharedRunData.ReloadSettings("RefreshSettingsView")
         }
+        return
+    }
+
+    LoadAdvancedSettings() {
+        global
+        if(g_BrivUserSettings)
+        {
+            GuiControl, ICScriptHub:, OptionSettingCheck_DoChestsContinuous, % g_BrivUserSettings[ "DoChestsContinuous" ]
+            GuiControl, ICScriptHub:, OptionSettingCheck_HiddenFarmWindow, % g_BrivUserSettings[ "HiddenFarmWindow" ]
+            GuiControl, ICScriptHub:, OptionSettingCheck_RestoreLastWindowOnGameOpen, % g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_ForceOfflineGemThreshold, % g_BrivUserSettings[ "ForceOfflineGemThreshold" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_ForceOfflineRunThreshold, % g_BrivUserSettings[ "ForceOfflineRunThreshold" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_BrivJumpBuffer, % g_BrivUserSettings[ "BrivJumpBuffer" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_DashWaitBuffer, % g_BrivUserSettings[ "DashWaitBuffer" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_ResetZoneBuffer, % g_BrivUserSettings[ "ResetZoneBuffer" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_WindowXPosition, % g_BrivUserSettings[ "WindowXPosition" ]
+            GuiControl, ICScriptHub:, OptionSettingEdit_WindowYPosition, % g_BrivUserSettings[ "WindowYPosition" ]
+            IC_BrivGemFarm_AdvancedSettings_Functions.LoadPreferredBrivJumpSettings()
+        }
+        Gui, ICScriptHub:Submit, NoHide
         return
     }
 
@@ -37,11 +57,5 @@ class IC_BrivGemFarm_AdvancedSettings_Component
             GUIFunctions.AddToolTip( "OptionSettingText_WindowXPositon", "Where the gem farm script will appear horizontally across your screen")
             GUIFunctions.AddToolTip( "OptionSettingText_WindowYPositon", "Where the gem farm script will appear vertically on your screen")
             GUIFunctions.AddToolTip( "OptionSettingText_BrivMaxLevel", "Maximum level Briv can be leveled to. Health upgrades at: 180 265 340 455 575 695 815 935 1050 1170 1300")
-    }
-
-    Refresh() {
-        GuiControl,ICScriptHub:, OptionSettingCheck_DoChestsContinuous, % g_BrivUserSettings[ "DoChestsContinuous" ]
-        GuiControl,ICScriptHub:, OptionSettingCheck_HiddenFarmWindow, % g_BrivUserSettings[ "HiddenFarmWindow" ]
-        GuiControl,ICScriptHub:, OptionSettingCheck_RestoreLastWindowOnGameOpen, % g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ]
     }
 }
