@@ -1,10 +1,12 @@
-ReloadBrivGemFarmSettings()
+ReloadBrivGemFarmSettings(loadFromFile := True)
 {
-    g_BrivUserSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\BrivGemFarmSettings.json" )
+    writeSettings := false
+    if(loadFromFile)
+        g_BrivUserSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\BrivGemFarmSettings.json" )
     If !IsObject( g_BrivUserSettings )
     {
         g_BrivUserSettings := {}
-        g_BrivUserSettings["WriteSettings"] := true
+        writeSettings := true
     }
     if ( g_BrivUserSettings[ "Fkeys" ] == "" )
         g_BrivUserSettings[ "Fkeys" ] := 1
@@ -16,8 +18,6 @@ ReloadBrivGemFarmSettings()
         g_BrivUserSettings[ "TargetStacks" ] := 4000
     if ( g_BrivUserSettings[ "RestartStackTime" ] == "" )
         g_BrivUserSettings[ "RestartStackTime" ] := 12000
-    if ( g_BrivUserSettings[ "DoChests" ] == "" )
-        g_BrivUserSettings[ "DoChests" ] := 1
     if ( g_BrivUserSettings[ "BuySilvers" ] == "" )
         g_BrivUserSettings[ "BuySilvers" ] := 1
     if ( g_BrivUserSettings[ "BuyGolds" ] == "" )
@@ -30,10 +30,22 @@ ReloadBrivGemFarmSettings()
         g_BrivUserSettings[ "MinGemCount" ] := 0
     if (g_BrivUserSettings[ "DashWaitBuffer" ] == "")    
         g_BrivUserSettings[ "DashWaitBuffer" ] := 30
-    if ( g_BrivUserSettings[ "WindowXPositon" ] == "" )
-        g_BrivUserSettings[ "WindowXPositon" ] := 0
-    if ( g_BrivUserSettings[ "WindowYPositon" ] == "" )
-        g_BrivUserSettings[ "WindowYPositon" ] := 0
+    if ( g_BrivUserSettings[ "WindowXPosition" ] == "" )
+        g_BrivUserSettings[ "WindowXPosition" ] := 0
+    if ( g_BrivUserSettings[ "WindowYPosition" ] == "" )
+        g_BrivUserSettings[ "WindowYPosition" ] := 0
+    if ( g_BrivUserSettings[ "WindowXPositon" ] != "" ) ; Legacy settings name handling.
+    {
+        g_BrivUserSettings[ "WindowXPosition" ] := g_BrivUserSettings[ "WindowXPositon" ]
+        g_BrivUserSettings.Delete("WindowXPositon")
+        writeSettings := True
+    }
+    if ( g_BrivUserSettings[ "WindowYPositon" ] != "" )
+    {
+        g_BrivUserSettings[ "WindowYPosition" ] := g_BrivUserSettings[ "WindowYPositon" ]
+        g_BrivUserSettings.Delete("WindowYPositon")
+        writeSettings := True
+    }
     if ( g_BrivUserSettings[ "HiddenFarmWindow" ] == "" )
         g_BrivUserSettings[ "HiddenFarmWindow" ] := 0
     if ( g_BrivUserSettings[ "DoChestsContinuous" ] == "" )
@@ -57,14 +69,19 @@ ReloadBrivGemFarmSettings()
     if (g_BrivUserSettings[ "AutoCalculateWorstCase" ] == "" )
         g_BrivUserSettings[ "AutoCalculateWorstCase" ] := true
     if ( g_BrivUserSettings[ "PreferredBrivJumpZones" ] == "")
-	    g_BrivUserSettings[ "PreferredBrivJumpZones" ] := [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] 
+	    g_BrivUserSettings[ "PreferredBrivJumpZones" ] := [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     if ( g_BrivUserSettings[ "BrivMaxLevel" ] == "" )
         g_BrivUserSettings[ "BrivMaxLevel" ] := 1300
     if ( g_BrivUserSettings[ "AlwaysStackSB" ] == "" )
         g_BrivUserSettings[ "AlwaysStackSB" ] := false
-    if(g_BrivUserSettings["WriteSettings"] := true)
+    ; Found legacy settings file.
+    if ( !writeSettings AND loadFromFile AND g_BrivUserSettings[ "LastSettingsUsed" ] == "" )
     {
-        g_BrivUserSettings.Delete("WriteSettings")
-        g_SF.WriteObjectToJSON( A_LineFile . "\..\BrivGemFarmSettings.json" , g_BrivUserSettings )   
+        g_BrivUserSettings[ "LastSettingsUsed" ] := "LegacySettings"
+        g_SF.WriteObjectToJSON( A_LineFile . "\..\Profiles\LegacySettings_Settings.json" , g_BrivUserSettings )
     }
+    if ( g_BrivUserSettings[ "LastSettingsUsed" ] == "" )
+        g_BrivUserSettings[ "LastSettingsUsed" ] := "Default"
+    if( writeSettings == true )
+        g_SF.WriteObjectToJSON( A_LineFile . "\..\BrivGemFarmSettings.json" , g_BrivUserSettings )
 }

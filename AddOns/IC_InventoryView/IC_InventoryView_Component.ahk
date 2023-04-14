@@ -31,6 +31,7 @@ Gui, ICScriptHub:Add, Text, vInventoryViewTimeStampID x15 y+15 w455, % "Last Upd
 GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, x15 y+5 w450 h450 vInventoryViewID, `ID|Name|Amount|Change|Per `Run
 GUIFunctions.UseThemeListViewBackgroundColor("InventoryViewID")
+g_SF.Memory.InitializeChestsIndices()
 
 ; Highly recommended to use classes to reduce chance of interference with other addons/code.
 ; Below is the functionality included with the component. For readability in more complex addons, these will often be separated 
@@ -117,8 +118,8 @@ class IC_InventoryView_Component
             return "" 
         loop, %size%
         {
-            chestID := g_SF.Memory.GetInventoryChestIDBySlot(A_Index)
-            itemAmount := g_SF.Memory.GetInventoryChestCountBySlot(A_Index)
+            chestID := g_SF.Memory.ReadInventoryChestIDBySlot(A_Index - 1)
+            itemAmount := g_SF.Memory.ReadInventoryChestCountBySlot(A_Index - 1)
             itemName := g_SF.Memory.GetChestNameByID(chestID)
             change := this.GetChange(chestID, itemAmount, "Chest")
             perRunVal := Round(change / runCount, 2)
