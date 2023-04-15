@@ -788,13 +788,6 @@ class IC_SharedFunctions_Class
                 DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
                 DllCall("CloseHandle", "UInt", ProcessHandle)
                 this.Memory.OpenProcessReader()
-                Sleep, 2500
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 250
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 250
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 50
                 loadingZone := this.WaitForGameReady()
                 this.ResetServerCall()
             }
@@ -814,6 +807,14 @@ class IC_SharedFunctions_Class
     {
         timeoutTimerStart := A_TickCount
         ElapsedTime := 0
+        ; Skip loading screens
+        Sleep, 2500
+        this.DirectedInput(,, "{ESC}")
+        Sleep, 250
+        this.DirectedInput(,, "{ESC}")
+        Sleep, 250
+        this.DirectedInput(,, "{ESC}")
+        Sleep, 50
         ; wait for game to start
         g_SharedData.LoopString := "Waiting for game started.."
         while( ElapsedTime < timeout AND !this.Memory.ReadGameStarted())
