@@ -1,3 +1,24 @@
+IC_ProcessAffinity_Functions.InjectAddon()
+
+class IC_ProcessAffinity_Functions
+{
+    ; Adds IC_ProcessAffinity_Addon.ahk to the startup of the Briv Gem Farm script.
+    InjectAddon()
+    {
+        splitStr := StrSplit(A_LineFile, "\")
+        addonDirLoc := splitStr[(splitStr.Count()-1)]
+        addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ProcessAffinity_Addon.ahk`n"
+        FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+    }
+
+    SetProcessAffinity(PID := 0)
+    {
+        ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", PID)
+        DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", 12779520)
+        DllCall("CloseHandle", "UInt", ProcessHandle)
+    }
+}
+
 class IC_ProcessAffinity_SharedFunctions_Class extends IC_BrivSharedFunctions_Class
 {
     ; Attemps to open IC. Game should be closed before running this function or multiple copies could open.
@@ -40,9 +61,10 @@ class IC_ProcessAffinity_SharedFunctions_Class extends IC_BrivSharedFunctions_Cl
             {
                 this.ActivateLastWindow()
                 Process, Priority, % this.PID, High
-                ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", this.PID)
-                DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
-                DllCall("CloseHandle", "UInt", ProcessHandle)
+                IC_ProcessAffinity_Functions.SetProcessAffinity(this.PID)
+                ;ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", this.PID)
+                ;DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 22) + (3 << 16))
+                ;DllCall("CloseHandle", "UInt", ProcessHandle)
                 this.Memory.OpenProcessReader()
                 loadingZone := this.WaitForGameReady()
                 this.ResetServerCall()
