@@ -44,13 +44,6 @@ class IC_ProcessAffinity_SharedFunctions_Class extends IC_BrivSharedFunctions_Cl
                 DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
                 DllCall("CloseHandle", "UInt", ProcessHandle)
                 this.Memory.OpenProcessReader()
-                Sleep, 2500
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 250
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 250
-                this.DirectedInput(,, "{ESC}") ;keysdownup
-                Sleep, 50
                 loadingZone := this.WaitForGameReady()
                 this.ResetServerCall()
             }
