@@ -21,58 +21,32 @@ class IC_ProcessAffinity_Functions
 
 class IC_ProcessAffinity_SharedFunctions_Class extends IC_BrivSharedFunctions_Class
 {
-    ; Attemps to open IC. Game should be closed before running this function or multiple copies could open.
-    OpenIC()
+    ; Runs the process and set this.PID once it is found running.
+    OpenProcessAndSetPID(timeoutLeft := 32000)
     {
-        timeoutVal := 32000
-        loadingDone := false
-        g_SharedData.LoopString := "Starting Game"
+        this.PID := 0
+        processWaitingTimeout := 10000 ;10s
         waitForProcessTime := g_UserSettings[ "WaitForProcessTime" ]
-        WinGetActiveTitle, savedActive
-        this.SavedActiveWindow := savedActive
-        while ( !loadingZone AND ElapsedTime < timeoutVal )
+        ElapsedTime := 0
+        StartTime := A_TickCount
+        while (!this.PID AND ElapsedTime < timeoutLeft )
         {
-            this.Hwnd := 0
-            this.PID := 0
-            while (!this.PID AND ElapsedTime < timeoutVal )
+            g_SharedData.LoopString := "Opening IC.."
+            programLoc := g_UserSettings[ "InstallPath" ]
+            Run, %programLoc%
+            Sleep, %waitForProcessTime%
+            while(!this.PID AND ElapsedTime < processWaitingTimeout AND ElapsedTime < timeoutLeft)
             {
-                StartTime := A_TickCount
-                ElapsedTime := 0
-                g_SharedData.LoopString := "Opening IC.."
-                programLoc := g_UserSettings[ "InstallPath" ]
-                Run, %programLoc%
-                Sleep, %waitForProcessTime%
-                while(ElapsedTime < 10000 AND !this.PID )
-                {
-                    ElapsedTime := A_TickCount - StartTime
-                    existingProcessID := g_userSettings[ "ExeName"]
-                    Process, Exist, %existingProcessID%
-                    this.PID := ErrorLevel
-                }
-            }
-            ; Process exists, wait for the window:
-            while(!(this.Hwnd := WinExist( "ahk_exe " . g_userSettings[ "ExeName"] )) AND ElapsedTime < timeoutVal)
-            {
-                WinGetActiveTitle, savedActive
-                this.SavedActiveWindow := savedActive
+                existingProcessID := g_userSettings[ "ExeName"]
+                Process, Exist, %existingProcessID%
+                this.PID := ErrorLevel
+                Sleep, 62
                 ElapsedTime := A_TickCount - StartTime
             }
-            if(ElapsedTime < timeoutVal)
-            {
-                this.ActivateLastWindow()
-                Process, Priority, % this.PID, High
-                IC_ProcessAffinity_Functions.SetProcessAffinity(this.PID)
-                ;ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", this.PID)
-                ;DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 22) + (3 << 16))
-                ;DllCall("CloseHandle", "UInt", ProcessHandle)
-                this.Memory.OpenProcessReader()
-                loadingZone := this.WaitForGameReady()
-                this.ResetServerCall()
-            }
+            ElapsedTime := A_TickCount - StartTime
+            Sleep, 62
         }
-        if(ElapsedTime >= timeoutVal)
-            return -1 ; took too long to open
-        else
-            return 0
+        if (this.PID)
+            IC_ProcessAffinity_Functions.SetProcessAffinity(this.PID)
     }
 }
