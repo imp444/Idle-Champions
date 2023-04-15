@@ -759,8 +759,9 @@ class IC_SharedFunctions_Class
                 this.OpenProcessAndSetPID(timeoutVal - ElapsedTime)
             ElapsedTime := A_TickCount - StartTime
             if(ElapsedTime < timeoutVal)
-                this.SetLastActiveWindow(timeoutVal - ElapsedTime)
-             Process, Priority, % this.PID, High
+                this.SetLastActiveWindowWhileWaingForGameExe(timeoutVal - ElapsedTime)
+            Process, Priority, % this.PID, High
+            this.ActivateLastWindow()
             this.Memory.OpenProcessReader()
             ElapsedTime := A_TickCount - StartTime
             if(ElapsedTime < timeoutVal)
@@ -771,14 +772,9 @@ class IC_SharedFunctions_Class
             ElapsedTime := A_TickCount - StartTime
         }
         if(ElapsedTime >= timeoutVal)
-        {
             return -1 ; took too long to open
-        }
         else
-        {
-            this.ActivateLastWindow()
             return 0
-        }
     }
 
     ; Runs the process and set this.PID once it is found running. 
@@ -808,8 +804,8 @@ class IC_SharedFunctions_Class
         }
     }
 
-    ; Saves this.SavedActiveWindow as the last window active before the game exe has loaded.
-    SetLastActiveWindow(timeoutLeft := 32000)
+    ; Saves this.SavedActiveWindow as the last window and waits for the game exe to load its window.
+    SetLastActiveWindowWhileWaingForGameExe(timeoutLeft := 32000)
     {
         StartTime := A_TickCount
         ; Process exists, wait for the window:
