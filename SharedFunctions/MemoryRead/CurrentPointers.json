@@ -10,7 +10,7 @@
 	"DialogManager":{
 		"moduleAddress":4824176,
 		"moduleOffset":[
-			2496
+			2480
 		],
 		"staticOffset":""
 	},
@@ -37,5 +37,5 @@
 	},
 	"is64":1,
 	"Platform":"Steam",
-	"Version":504
+	"Version":"504-DM-Alt"
 }
