@@ -102,6 +102,8 @@ Class IC_ProcessAffinity_Component
             return
         this.Settings["ProcessAffinityMask"] := coreMask
         g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings )
+        IC_ProcessAffinity_Functions.SetProcessAffinityInverse(DllCall("GetCurrentProcessId")) ; ICScriptHub.ahk
+        ;x := ObjBindMethod(gLaunchClickButton, IC_ProcessAffinity_Functions.SetProcessAffinity, g_SF.PID)
     }
 
     ; Update checkboxes
@@ -146,5 +148,7 @@ Class IC_ProcessAffinity_Component
         return false
     }
 }
+
+IC_ProcessAffinity_Functions.InjectAddon()
 
 #include %A_LineFile%\..\IC_ProcessAffinity_Functions.ahk
