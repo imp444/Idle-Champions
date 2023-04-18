@@ -335,26 +335,7 @@ class IC_BrivGemFarm_Component
         }
         else if (profile == "")
         {
-            for k,v in this.BrivUserSettingsProfile
-            {
-                if(!IsObject(v) AND this.BrivUserSettingsProfile[k] != g_BrivUserSettings[k])
-                {
-                    updateStatusMsg := "Session contains changes not yet saved to profile."
-                    break
-                }
-                else if (IsObject(v))
-                {
-                    for k1, v1 in v
-                    {
-                        local v2 := g_BrivUserSettings[k][k1]
-                        if(v[k1] != g_BrivUserSettings[k][k1])
-                        {
-                            updateStatusMsg := "Session contains changes not yet saved to profile."
-                            break
-                        }
-                    }
-                }
-            }
+            updateStatusMsg := this.TestSettingsMatchProfile(updateStatusMsg)
         }
         try ; avoid thrown errors when comobject is not available.
         {
@@ -365,19 +346,60 @@ class IC_BrivGemFarm_Component
         return
     }
 
+    ; Checks that current user settings match the currently selected profile's settings.
+    TestSettingsMatchProfile(updateStatusMsg)
+    {
+        global g_BrivUserSettings
+        for k,v in this.BrivUserSettingsProfile
+        {
+            if(!IsObject(v) AND this.BrivUserSettingsProfile[k] != g_BrivUserSettings[k])
+            {
+                updateStatusMsg := "Session contains changes not yet saved to profile."
+                break
+            }
+            else if (IsObject(v))
+            {
+                for k1, v1 in v
+                {
+                    v2 := g_BrivUserSettings[k][k1]
+                    if(v[k1] != g_BrivUserSettings[k][k1])
+                    {
+                        updateStatusMsg := "Session contains changes not yet saved to profile."
+                        break
+                    }
+                }
+            }
+        }
+        return updateStatusMsg
+    }
+
     ;Saves Settings associated with BrivGemFarm
     Briv_Load_Profile_Clicked(settings := "Default", fullLoad := True)
     {
         global
+        if(settings == "")
+            return
         ; GuiControl, ICScriptHub:ChooseString, BrivDropDownSettings, %settings%
         Controlget, Row, FindString, %settings%, , ahk_id %BrivDropDownSettingsHWND% ; Docs: Sets OutputVar to the entry number of a ListBox or ComboBox that is an exact match for String.
         GuiControl, ICScriptHub:Choose, BrivDropDownSettings, %Row%
         if (!fullLoad)
+        {
+            this.BrivUserSettingsProfile := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Profiles\" . settings . "_Settings.json" )
             return
+        }
+        if(this.TestSettingsMatchProfile("") != "")
+        {
+            MsgBox 4,, There are unsaved changes to this profile. Are you sure you wish to load a new profile?
+            IfMsgBox No
+            {
+                lastSelected := g_BrivUserSettings[ "LastSettingsUsed" ] 
+                Controlget, Row, FindString, %lastSelected%, , ahk_id %BrivDropDownSettingsHWND% ; Docs: Sets OutputVar to the entry number of a ListBox or ComboBox that is an exact match for String.
+                GuiControl, ICScriptHub:Choose, BrivDropDownSettings, %Row%
+                return
+            }
+        }
         this.UpdateStatus("Loading Settings...")
         g_BrivUserSettings = {}
-        if(settings == "")
-            return
         if(settings == "Default")
             ReloadBrivGemFarmSettings(False)
         else
@@ -410,6 +432,7 @@ class IC_BrivGemFarm_Component
 
     Briv_Load_Profiles_List()
     {
+        global BrivDropDownSettingsHWND
         this.ProfilesList := {}
         profileDDLString := "|Default|"
         this.ProfilesList["Default"] := A_LineFile . "..\BrivGemFarmSettings.json"
@@ -423,7 +446,8 @@ class IC_BrivGemFarm_Component
         }
         GuiControl, ICScriptHub:, BrivDropDownSettings, %profileDDLString%
         lastSelected := this.ProfileLastSelected
-        GuiControl, ICScriptHub:ChooseString, BrivDropDownSettings, %lastSelected%
+        Controlget, Row, FindString, %lastSelected%, , ahk_id %BrivDropDownSettingsHWND% ; Docs: Sets OutputVar to the entry number of a ListBox or ComboBox that is an exact match for String.
+        GuiControl, ICScriptHub:Choose, BrivDropDownSettings, %Row%
         Gui, Submit, NoHide
     }
 
