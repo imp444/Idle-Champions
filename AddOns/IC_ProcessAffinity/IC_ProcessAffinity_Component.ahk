@@ -102,8 +102,29 @@ Class IC_ProcessAffinity_Component
             return
         this.Settings["ProcessAffinityMask"] := coreMask
         g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings )
+        this.SetAllAffinities()
+    }
+
+    ; Sets the appropriate affinities to the game and scripts
+    SetAllAffinities()
+    {
+        ; Set affinity after starting the GUI
         IC_ProcessAffinity_Functions.SetProcessAffinityInverse(DllCall("GetCurrentProcessId")) ; ICScriptHub.ahk
-        ;x := ObjBindMethod(gLaunchClickButton, IC_ProcessAffinity_Functions.SetProcessAffinity, g_SF.PID)
+        ; Override ICScriptHub.ahk's "Launch Idle Champions" button to set the game's affinity
+        f := ObjBindMethod(g_ProcessAffinity, "Launch_Clicked_Affinity")
+        GuiControl,ICScriptHub: +g, LaunchClickButton, % f
+        ; Set affinity if the game process exists
+        existingProcessID := g_UserSettings[ "ExeName"]
+        Process, Exist, %existingProcessID%
+        gamePID := ErrorLevel
+        IC_ProcessAffinity_Functions.SetProcessAffinity(gamePID) ; IdleDragons.exe
+    }
+
+    ; Set affinity after clicking ICScriptHub.ahk's "Launch Idle Champions" button
+    Launch_Clicked_Affinity()
+    {
+        Launch_Clicked()
+        IC_ProcessAffinity_Functions.SetProcessAffinity(g_SF.PID) ; IdleDragons.exe
     }
 
     ; Update checkboxes

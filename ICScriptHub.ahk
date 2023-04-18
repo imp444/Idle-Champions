@@ -116,9 +116,6 @@ Launch_Clicked()
     Run, %programLoc%
     Process, Exist, % g_UserSettings[ "ExeName"]
     g_SF.PID := ErrorLevel
-    ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", g_SF.PID)
-    DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
-    DllCall("CloseHandle", "UInt", ProcessHandle)
 }
 
 ICScriptHubGuiClose()
