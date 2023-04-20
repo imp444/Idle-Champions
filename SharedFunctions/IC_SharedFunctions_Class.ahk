@@ -803,12 +803,6 @@ class IC_SharedFunctions_Class
             ElapsedTime := A_TickCount - StartTime
             Sleep, 62
         }
-        if (this.PID)
-        {
-            ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", this.PID)
-            DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, "UInt", (3 << 16) + (3 << 22))
-            DllCall("CloseHandle", "UInt", ProcessHandle)
-        }
     }
 
     ; Saves this.SavedActiveWindow as the last window and waits for the game exe to load its window.
