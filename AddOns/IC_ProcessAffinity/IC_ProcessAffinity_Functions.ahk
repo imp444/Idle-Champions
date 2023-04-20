@@ -24,17 +24,16 @@ class IC_ProcessAffinity_Functions
 
     SetProcessAffinityInverse(PID := 0)
     {
-        ;3997695
         if (PID == 0)
             return
         affinity := this.AffinitySettings()
-        if (affinity == 0)
-            return
-        affinity := ~affinity
-        ;MsgBox, % affinity
+        EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
+        negMask := ProcessorCount == 64 ? -1 : -1 >>> (64 - ProcessorCount)
+        negAffinity := affinity ^ negMask
+        negAffinity := !negAffinity ? affinity : negAffinity
         ProcessHandle := DllCall("OpenProcess", "UInt", 0x1F0FFF, "Int", False, "UInt", PID)
         size := A_Is64bitOS ? "Int64" : "UInt"
-        DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, size, 3997695)
+        DllCall("SetProcessAffinityMask", "UInt", ProcessHandle, size, negAffinity)
         DllCall("CloseHandle", "UInt", ProcessHandle)
     }
 
