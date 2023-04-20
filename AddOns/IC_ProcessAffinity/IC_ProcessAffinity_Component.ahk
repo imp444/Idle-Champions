@@ -115,7 +115,7 @@ Class IC_ProcessAffinity_Component
     SetAllAffinities()
     {
         ; Set affinity after starting the GUI
-        IC_ProcessAffinity_Functions.SetProcessAffinityInverse(DllCall("GetCurrentProcessId")) ; ICScriptHub.ahk
+        IC_ProcessAffinity_Functions.SetProcessAffinity(DllCall("GetCurrentProcessId"), 1) ; ICScriptHub.ahk
         ; Override ICScriptHub.ahk's "Launch Idle Champions" button to set the game's affinity
         f := ObjBindMethod(g_ProcessAffinity, "Launch_Clicked_Affinity")
         GuiControl,ICScriptHub: +g, LaunchClickButton, % f
