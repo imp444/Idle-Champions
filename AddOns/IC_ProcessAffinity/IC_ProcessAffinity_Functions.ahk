@@ -45,7 +45,7 @@ class IC_ProcessAffinity_Functions
     AffinitySettings()
     {
         settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\ProcessAffinitySettings.json")
-        if (!IsObject(this.Settings))
+        if (!IsObject(settings))
             return 0
         coreMask := settings["ProcessAffinityMask"]
         if coreMask == "" or coreMask == 0)
