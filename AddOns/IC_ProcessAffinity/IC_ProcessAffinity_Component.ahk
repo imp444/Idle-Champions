@@ -72,7 +72,7 @@ Class IC_ProcessAffinity_Component
     LoadSettings()
     {
         this.Settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Settings.json")
-        if(this.Settings == "")
+        if (!IsObject(this.Settings))
             this.Settings := {}
         if (this.Settings["ProcessAffinityMask"] == "")
         {
@@ -100,8 +100,14 @@ Class IC_ProcessAffinity_Component
         }
         if (coremask == 0)
             return
-        this.Settings["ProcessAffinityMask"] := coreMask
-        g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings )
+        if (!IsObject(this.Settings))
+            this.Settings := {}
+        this.Settings["ProcessAffinityMask"] := coremask
+        ; g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings ) doesn't work with 64 cores
+        str := "{`n`t""ProcessAffinityMask"":""" . coremask . """`n}"
+        path := A_LineFile . "\..\Settings.json"
+        FileDelete, %path%
+        FileAppend, % str, %path%
         this.SetAllAffinities()
     }
 
