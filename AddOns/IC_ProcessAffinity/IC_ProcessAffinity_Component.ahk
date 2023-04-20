@@ -33,6 +33,13 @@ ProcessAffinityView()
     }
 }
 
+/*  IC_ProcessAffinity_Component
+
+    Class that manages the GUI for process affinity settings.
+    The first checkbox is a toggle button.
+    The other checkboxes set affinity to any number > 0 of available processor cores (physical/logical) for IdleDragons.exe.
+    Overrides ICScriptHub.ahk's "Launch Idle Champions" button.
+*/
 Class IC_ProcessAffinity_Component
 {
     ; Builds checkboxes for CoreAffinity
@@ -71,7 +78,7 @@ Class IC_ProcessAffinity_Component
     ; Loads settings from the addon's setting.json file.
     LoadSettings()
     {
-        this.Settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Settings.json")
+        this.Settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\ProcessAffinitySettings.json")
         if (!IsObject(this.Settings))
             this.Settings := {}
         if (this.Settings["ProcessAffinityMask"] == "")
@@ -103,9 +110,9 @@ Class IC_ProcessAffinity_Component
         if (!IsObject(this.Settings))
             this.Settings := {}
         this.Settings["ProcessAffinityMask"] := coremask
-        ; g_SF.WriteObjectToJSON( A_LineFile . "\..\Settings.json", this.Settings ) doesn't work with 64 cores
+        ; g_SF.WriteObjectToJSON( A_LineFile . "\..\ProcessAffinitySettings.json", this.Settings ) doesn't work with 64 cores
         str := "{`n`t""ProcessAffinityMask"":""" . coremask . """`n}"
-        path := A_LineFile . "\..\Settings.json"
+        path := A_LineFile . "\..\ProcessAffinitySettings.json"
         FileDelete, %path%
         FileAppend, % str, %path%
         this.SetAllAffinities()
@@ -116,7 +123,7 @@ Class IC_ProcessAffinity_Component
     {
         ; Set affinity after starting the GUI
         IC_ProcessAffinity_Functions.SetProcessAffinity(DllCall("GetCurrentProcessId"), 1) ; ICScriptHub.ahk
-        ; Override ICScriptHub.ahk's "Launch Idle Champions" button to set the game's affinity
+        ; Override ICScriptHub.ahk's "Launch Idle Champions" button to set the game's affinity, check for compatibility
         f := ObjBindMethod(g_ProcessAffinity, "Launch_Clicked_Affinity")
         GuiControl,ICScriptHub: +g, LaunchClickButton, % f
         ; Set affinity if the game process exists

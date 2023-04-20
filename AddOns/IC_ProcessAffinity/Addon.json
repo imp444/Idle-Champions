@@ -1,6 +1,6 @@
 {
 	"Name":"Process Affinity",
-	"Version": "v0.0.1",
+	"Version": "v0.1.0",
     "Includes" : "IC_ProcessAffinity_Component.ahk",
     "Author" : "ImpEGamer",
     "Url" : "https://github.com/imp444/Idle-Champions/tree/main/AddOns/IC_ProcessAffinity",

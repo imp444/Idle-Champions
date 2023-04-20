@@ -1,3 +1,4 @@
+; Functions that set affinities to processes
 class IC_ProcessAffinity_Functions
 {
     ; Adds IC_ProcessAffinity_Addon.ahk to the startup of the Briv Gem Farm script.
@@ -9,6 +10,13 @@ class IC_ProcessAffinity_Functions
         FileAppend, %addonLoc%, %g_BrivFarmModLoc%
     }
 
+    /*  SetProcessAffinity - A function to sets the affinity of a process
+
+        Parameters:
+        PID - PID of the target process
+        inverse - Inverse affinity, if e.g. core 0 is selected for the game, core 0 is unselected for the scripts
+        Returns:
+    */
     SetProcessAffinity(PID := 0, inverse := 0)
     {
         if (PID == 0)
@@ -23,19 +31,20 @@ class IC_ProcessAffinity_Functions
         DllCall("CloseHandle", "UInt", ProcessHandle)
     }
 
+    ; Returns the inverse affinity depending on the number of processor cores
     InverseAffinity(affinity := 0)
     {
         EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
         invMask := ProcessorCount == 64 ? -1 : -1 >>> (64 - ProcessorCount)
         invAffinity := affinity ^ invMask
-        invAffinity := !invAffinity ? affinity : invAffinity
+        invAffinity := !invAffinity ? affinity : invAffinity ; If all cores are selected for IdleDragons.exe, identical mask
         return invAffinity
     }
 
     ; Loads settings from the addon's setting.json file.
     AffinitySettings()
     {
-        settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\Settings.json")
+        settings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\ProcessAffinitySettings.json")
         if (!IsObject(this.Settings))
             return 0
         coreMask := settings["ProcessAffinityMask"]
@@ -45,6 +54,7 @@ class IC_ProcessAffinity_Functions
     }
 }
 
+; Overrides IC_BrivSharedFunctions_Class, check for compatibility
 class IC_ProcessAffinity_SharedFunctions_Class extends IC_BrivSharedFunctions_Class
 {
     ; Set affinity after restart
