@@ -19,6 +19,7 @@ IC_ProcessAffinity_Component.Init()
 ; Load button
 ProcessAffinityLoad()
 {
+    restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
     LV_Delete()
     IC_ProcessAffinity_Component.ReloadCheckboxes()
     Sleep, 50
@@ -79,6 +80,7 @@ Class IC_ProcessAffinity_Component
     ; Builds checkboxes for CoreAffinity
     ReloadCheckboxes()
     {
+        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
         processorCount := this.ProcessorCount
         this.LoadSettings()
         LV_Add(, "All processors") ; Create unchecked boxes
@@ -115,6 +117,7 @@ Class IC_ProcessAffinity_Component
      ; Saves settings to addon's setting.json file.
     SaveSettings()
     {
+        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
         coreMask := 0
         rowNumber := 1
         loop ; Sum up all checked boxes as an integer || signed int for 64 cores
@@ -163,6 +166,7 @@ Class IC_ProcessAffinity_Component
     ; Update checkboxes
     Update(checkBoxIndex := 0, on := 1)
     {
+        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
         if (checkBoxIndex == 1) ; Toggle all checkbox
             this.ToggleAllCores(on)
         else if (!on)
@@ -180,6 +184,7 @@ Class IC_ProcessAffinity_Component
     {
         if (!on AND !this.AreAllCoresChecked())
             return
+        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
         loop % LV_GetCount() - 1 ; Skip the toggle all checkbox
         {
             LV_Modify(A_Index + 1, on ? "Check" : "-Check")
@@ -189,6 +194,7 @@ Class IC_ProcessAffinity_Component
     ; Returns true if all the core checkboxes are checked
     AreAllCoresChecked()
     {
+        restore_gui_on_return := GUIFunctions.LV_Scope("ICScriptHub", "ProcessAffinityView")
         rowNumber := 1 ; This causes the first loop iteration to start the search at the top of the list.
         loop
         {
