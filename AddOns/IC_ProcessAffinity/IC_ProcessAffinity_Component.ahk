@@ -73,7 +73,7 @@ Class IC_ProcessAffinity_Component
         GuiControl, Enable, ProcessAffinityLoad
         GuiControl, Enable, ProcessAffinitySave
         GuiControl, Enable, ProcessAffinityView
-        this.ReloadCheckboxes()
+        ProcessAffinityLoad()
         this.SaveSettings()
     }
 
