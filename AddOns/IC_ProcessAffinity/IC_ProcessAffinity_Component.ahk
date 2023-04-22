@@ -12,7 +12,9 @@ Gui, ICScriptHub:Add, Button , Disabled x+10 vProcessAffinitySave gProcessAffini
 Gui, ICScriptHub:Add, Text, vProcessAffinityText x15 y+5 w125
 
 GUIFunctions.UseThemeTextColor("TableTextColor")
-Gui, ICScriptHub:Add, ListView, AltSubmit Checked Disabled -Hdr -Multi x15 y+10 w120 h320 vProcessAffinityView gProcessAffinityView, CoreID
+EnvGet, ProcessorCount, NUMBER_OF_PROCESSORS
+hCols := Min(ProcessorCount + 1, 33)
+Gui, ICScriptHub:Add, ListView, AltSubmit Checked Disabled -Hdr -Multi R%hCols% x15 y+10 w120 vProcessAffinityView gProcessAffinityView, CoreID
 GUIFunctions.UseThemeListViewBackgroundColor("ProcessAffinityView")
 IC_ProcessAffinity_Component.Init()
 
@@ -95,6 +97,7 @@ Class IC_ProcessAffinity_Component
             if (checked)
                 LV_Modify(A_Index + 1, "Check")
         }
+        LV_ModifyCol(, 1) ; Hide horizontal scroll bar
     }
 
     ; Loads settings from the addon's setting.json file.
