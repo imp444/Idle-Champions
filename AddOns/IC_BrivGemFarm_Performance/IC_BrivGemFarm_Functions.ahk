@@ -645,7 +645,7 @@ class IC_BrivGemFarm_Class
             champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95, 56, 70, 12, 4, 39, 113, 94, 30]
             if (maxLevels[58] < 170)
             {
-                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? this.TargetStacks : g_BrivUserSettings[ "TargetStacks" ]
+                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? (this.TargetStacks - this.LeftoverStacks) : g_BrivUserSettings[ "TargetStacks" ]
                 if g_SF.Memory.ReadSBStacks() >= targetStacks
                     maxLevels[58] := 170
             }
