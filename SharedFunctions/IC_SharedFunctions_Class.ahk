@@ -305,7 +305,7 @@ class IC_SharedFunctions_Class
                 this.DirectedInput(,, "{g}" )
                 keyCount++
             }
-        } 
+        }
         Critical, Off
     }
 

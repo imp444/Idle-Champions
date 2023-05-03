@@ -62,6 +62,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
 
 
     /*  WaitForModronReset - A function that monitors a modron resetting process.
+
         Returns:
         bool - true if completed successfully; returns false if reset does not occur within 75s
     */
@@ -98,7 +99,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
             return
         Sleep, 100 ; extra wait for window to load
         hwnd := this.Hwnd
-        WinActivate, ahk_id %hwnd% ; Idle Champions likes to be activated before it can be deactivated
+        WinActivate, ahk_id %hwnd% ; Idle Champions likes to be activated before it can be deactivated            
         savedActive := this.SavedActiveWindow
         WinActivate, %savedActive%
     }
@@ -114,7 +115,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
         hasHasteStacks := this.Memory.ReadHasteStacks() > 50
         if (!hasHasteStacks)
             Return False
-        isShandieInFormation := this.IsChampInFormation( 47, this.Memory.GetCurrentFormation() )
+        isShandieInFormation := this.IsChampInFormation( 47, this.Memory.GetCurrentFormation() )            
         if (!isShandieInFormation)
             return False
 
@@ -274,19 +275,19 @@ class IC_BrivGemFarm_Class
             return
         stacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? g_SF.Memory.ReadSBStacks() : this.GetNumStacksFarmed()
         targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? (this.TargetStacks - this.LeftoverStacks) : g_BrivUserSettings[ "TargetStacks" ]
-
+        
         stackfail := 0
         forcedResetReason := ""
         ; passed stack zone, start stack farm. Normal operation.
         if (stacks < targetStacks AND CurrentZone > g_BrivUserSettings[ "StackZone" ])
         {
             ; normal-success / adjusted-sucess behavior. Use settings zone or adjusted zone if good zone has been found. (Resets to StackZone for 3 runs before sticking)
-            if (this.LastStackSuccessArea == CurrentZone )
+            if (this.LastStackSuccessArea == CurrentZone ) 
                 this.StackFarm()
             ; abnormal stacking - Normal zone failed, current zone is later and has 0 or "" failures on this zone. Try it.
-            else if (!this.StackFailAreasTally[CurrentZone] )
+            else if (!this.StackFailAreasTally[CurrentZone] ) 
                 this.StackFarm()
-            ; only stack farm if this zone hasn't been tried this run yet and still below max tries.
+            ; only stack farm if this zone hasn't been tried this run yet and still below max tries. 
             else if (this.LastStackSuccessArea == 0 AND !this.StackFailAreasThisRunTally[CurrentZone] AND this.StackFailAreasTally[CurrentZone] < this.MaxStackRestartFails)
                 this.StackFarm()
             ; Safety - One more jump will be over modron reset and stacking has not been done.
@@ -323,7 +324,7 @@ class IC_BrivGemFarm_Class
             g_SharedData.StackFailStats.TALLY[stackfail] += 1
             forcedResetReason := " Stacks > target stacks & party > " . g_BrivUserSettings["ResetZoneBuffer"] . " levels past stack zone"
             g_SF.RestartAdventure(forcedResetReason)
-        }
+        }           
         return stackfail
     }
 
@@ -332,7 +333,7 @@ class IC_BrivGemFarm_Class
     {
         gemsMax := g_BrivUserSettings[ "ForceOfflineGemThreshold" ]
         runsMax := g_BrivUserSettings[ "ForceOfflineRunThreshold" ]
-        ; hybrid stacking not used. Use default test for offline stacking.
+        ; hybrid stacking not used. Use default test for offline stacking. 
         if !( (gemsMax > 1) OR (runsMax > 0) )
         {
             return ( g_BrivUserSettings [ "RestartStackTime" ] > 0 )
@@ -419,7 +420,7 @@ class IC_BrivGemFarm_Class
         else
             this.StackNormal()
         ; SetFormation needs to occur before dashwait in case game erronously placed party on boss zone after stack restart
-        g_SF.SetFormation(g_BrivUserSettings)
+        g_SF.SetFormation(g_BrivUserSettings) 
         if (g_SF.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1 )
@@ -427,7 +428,9 @@ class IC_BrivGemFarm_Class
 
     /*  StackRestart - Stack Briv's SteelBones by switching to his formation and restarting the game.
                        Attempts to buy are open chests while game is closed.
+
     Parameters:
+
     Returns:
     */
     ; Stack Briv's SteelBones by switching to his formation and restarting the game.
@@ -499,12 +502,14 @@ class IC_BrivGemFarm_Class
             this.LastStackSuccessArea := g_SF.CurrentZone
         }
         g_PreviousZoneStartTime := A_TickCount
-        return
+        return 
     }
 
     /*  StackNormal - Stack Briv's SteelBones by switching to his formation and waiting for stacks to build.
+
     Parameters:
     maxOnlineStackTime -  Maximum time in ms script will spend stacking. Default is 5 minutes.
+
     Returns:
     */
     ; Stack Briv's SteelBones by switching to his formation.
@@ -564,7 +569,7 @@ class IC_BrivGemFarm_Class
             g_SF.SafetyCheck()
             return StackFailStates.FAILED_TO_CONVERT_STACKS ; 2
         }
-        ; all stacks were lost on reset. Stack leeway given for automatic calc variations.
+        ; all stacks were lost on reset. Stack leeway given for automatic calc variations. 
         if ((g_SF.Memory.ReadHasteStacks() + variationLeeway) < targetStacks AND g_SF.Memory.ReadSBStacks() <= variationLeeway)
         {
             g_SharedData.StackFailStats.TALLY[StackFailStates.FAILED_TO_KEEP_STACKS] += 1
@@ -578,7 +583,9 @@ class IC_BrivGemFarm_Class
     ;===========================================================
     /*  DoPartySetup - When gem farm is started or an adventure is reloaded, this is called to set up the primary party.
                        Levels Shandie and Briv, waits for Shandie Dash to start, completes the quests of the zone and then go time.
+
         Parameters:
+
         Returns:
     */
     DoPartySetup()
@@ -649,7 +656,7 @@ class IC_BrivGemFarm_Class
         team := {1:"Speed", 2:"Stack Farm", 3:"Speed No Briv"}
         testFunc := ObjBindMethod(g_SF, "IsChampInFavoriteFormation", champID, favorite ) ; don't ignore empty
         foundChampName := g_SF.Memory.ReadChampNameByID(champID)
-
+        
         errMsg := "Please confirm " . foundChampName . stateText . (includeChampion ? " is" : " is NOT") .  " saved in formation favorite slot " . favorite . ". " . txtCheck
         formation := g_SF.RetryTestOnError(errMsg, testFunc, expectedVal := True, shouldBeEqual := includeChampion)
         if (formation == -1)
@@ -662,7 +669,7 @@ class IC_BrivGemFarm_Class
     {
         formationSlot := this.TestFormationSlotByFavorite( favorite , txtcheck)
         if (formationSlot == -1)
-            return -1
+            return -1 
         formation := this.TestFormationFavorite(formationSlot, favorite, txtcheck)
         if (formation == -1)
             return -1
@@ -784,7 +791,7 @@ class IC_BrivGemFarm_Class
     ; Builds a string that shows how many chests have been opened/bought above the values passed into this function.
     GetChestDifferenceString(lastPurchasedSilverChests, lastPurchasedGoldChests, lastOpenedGoldChests, lastOpenedSilverChests )
     {
-        boughtSilver := g_SharedData.PurchasedSilverChests - lastPurchasedSilverChests
+        boughtSilver := g_SharedData.PurchasedSilverChests - lastPurchasedSilverChests 
         boughtGold := g_SharedData.PurchasedGoldChests - lastPurchasedGoldChests
         openedSilver := g_SharedData.OpenedSilverChests - lastOpenedSilverChests
         openedGold := g_SharedData.OpenedGoldChests - lastOpenedGoldChests
@@ -796,14 +803,16 @@ class IC_BrivGemFarm_Class
     }
 
     /*  BuyChests - A method to buy chests based on parameters passed.
+
         Parameters:
         chestID   - The ID of the chest to be bought. Default is 1 (silver).
         startTime - The number of milliseconds that have elapsed since the system was started, up to 49.7 days.
             Used to estimate if there is enough time to perform those actions before attempting to do them.
         numChests - expected number of chests to buy. Default is 100.
-
+            
         Return Values:
         None
+
         Side Effects:
         On success, will update g_SharedData.PurchasedSilverChests and g_SharedData.PurchasedGoldChests.
         On success, will update g_SF.TotalSilverChests, g_SF.TotalGoldChests, g_SF.TotalGems
@@ -830,13 +839,16 @@ class IC_BrivGemFarm_Class
     }
 
     /*  OpenChests - A method to open chests based on parameters passed.
+
         Parameters:
         chestID   - The ID of the chest to be bought. Default is 1 (silver).
         startTime - The number of milliseconds that have elapsed since the system was started, up to 49.7 days.
             Used to estimate if there is enough time to perform those actions before attempting to do them.
         numChests - expected number of chests to open. Default is 100.
+
         Return Values:
         None
+        
         Side Effects:
         On success, will update g_SharedData.OpenedSilverChests and g_SharedData.OpenedGoldChests.
         On success, will update g_SF.TotalSilverChests, g_SF.TotalGoldChests, g_SF.TotalGems
