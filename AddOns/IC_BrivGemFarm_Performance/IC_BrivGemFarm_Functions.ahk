@@ -419,7 +419,6 @@ class IC_BrivGemFarm_Class
         else
             this.StackNormal()
         ; SetFormation needs to occur before dashwait in case game erronously placed party on boss zone after stack restart
-        g_SF.SetFormation(g_BrivUserSettings) 
         g_SF.SetFormation(g_BrivUserSettings)
         if (g_SF.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
