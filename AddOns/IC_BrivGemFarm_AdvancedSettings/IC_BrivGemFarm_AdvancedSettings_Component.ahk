@@ -14,7 +14,6 @@ class IC_BrivGemFarm_AdvancedSettings_Component
         g_BrivUserSettings[ "ResetZoneBuffer" ] := OptionSettingEdit_ResetZoneBuffer
         g_BrivUserSettings[ "WindowXPositon" ] := OptionSettingEdit_WindowXPositon
         g_BrivUserSettings[ "WindowYPositon" ] := OptionSettingEdit_WindowYPositon
-        g_BrivUserSettings[ "BrivMaxLevel" ] := OptionSettingEdit_BrivMaxLevel
         IC_BrivGemFarm_AdvancedSettings_Functions.UpdateJumpSettings()
         g_SF.WriteObjectToJSON( A_LineFile . "\..\..\IC_BrivGemFarm_Performance\BrivGemFarmSettings.json" , g_BrivUserSettings )
         try ; avoid thrown errors when comobject is not available.
@@ -56,6 +55,5 @@ class IC_BrivGemFarm_AdvancedSettings_Component
             GUIFunctions.AddToolTip( "OptionSettingText_ResetZoneBuffer", "Change this value to increase the number of zones the script will go waiting for modron reset after stacking before manually resetting")
             GUIFunctions.AddToolTip( "OptionSettingText_WindowXPositon", "Where the gem farm script will appear horizontally across your screen")
             GUIFunctions.AddToolTip( "OptionSettingText_WindowYPositon", "Where the gem farm script will appear vertically on your screen")
-            GUIFunctions.AddToolTip( "OptionSettingText_BrivMaxLevel", "Maximum level Briv can be leveled to. Health upgrades at: 180 265 340 455 575 695 815 935 1050 1170 1300")
     }
 }

@@ -62,7 +62,6 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
 
 
     /*  WaitForModronReset - A function that monitors a modron resetting process.
-
         Returns:
         bool - true if completed successfully; returns false if reset does not occur within 75s
     */
@@ -99,7 +98,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
             return
         Sleep, 100 ; extra wait for window to load
         hwnd := this.Hwnd
-        WinActivate, ahk_id %hwnd% ; Idle Champions likes to be activated before it can be deactivated            
+        WinActivate, ahk_id %hwnd% ; Idle Champions likes to be activated before it can be deactivated
         savedActive := this.SavedActiveWindow
         WinActivate, %savedActive%
     }
@@ -115,7 +114,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
         hasHasteStacks := this.Memory.ReadHasteStacks() > 50
         if (!hasHasteStacks)
             Return False
-        isShandieInFormation := this.IsChampInFormation( 47, this.Memory.GetCurrentFormation() )            
+        isShandieInFormation := this.IsChampInFormation( 47, this.Memory.GetCurrentFormation() )
         if (!isShandieInFormation)
             return False
 
@@ -194,16 +193,16 @@ class IC_BrivGemFarm_Class
             g_SF.SetFormation(g_BrivUserSettings)
             if (g_SF.Memory.ReadResetsCount() > lastResetCount OR g_SharedData.TriggerStart) ; first loop or Modron has reset
             {
-                keyspam := Array()
                 g_SharedData.BossesHitThisRun := 0
                 g_SF.ToggleAutoProgress( 0, false, true )
                 g_SharedData.StackFail := this.CheckForFailedConv()
                 g_SF.WaitForFirstGold()
-                ;if g_BrivUserSettings[ "Fkeys" ]
-                    ;keyspam := g_SF.GetFormationFKeys(formationModron)
+                keyspam := Array()
+                if g_BrivUserSettings[ "Fkeys" ]
+                    keyspam := g_SF.GetFormationFKeys(formationModron)
                 doKeySpam := true
-                keyspam.Push(this.DoPartySetup(1))
                 keyspam.Push("{ClickDmg}")
+                this.DoPartySetup()
                 lastResetCount := g_SF.Memory.ReadResetsCount()
                 g_SF.Memory.ActiveEffectKeyHandler.Refresh()
                 worstCase := g_BrivUserSettings[ "AutoCalculateWorstCase" ]
@@ -226,11 +225,7 @@ class IC_BrivGemFarm_Class
             if (!Mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND Mod( g_SF.Memory.ReadHighestZone(), 5 ) AND !g_SF.Memory.ReadTransitioning())
                 g_SF.ToggleAutoProgress( 1, true ) ; Toggle autoprogress to skip boss bag
             if (g_SF.Memory.ReadResetting())
-            {
                 this.ModronResetCheck()
-                keyspam = Array()
-            }
-            this.DoPartySetup()
             if (CurrentZone > PreviousZone ) ; needs to be greater than because offline could stacking getting stuck in descending zones.
             {
                 PreviousZone := CurrentZone
@@ -279,19 +274,19 @@ class IC_BrivGemFarm_Class
             return
         stacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? g_SF.Memory.ReadSBStacks() : this.GetNumStacksFarmed()
         targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? (this.TargetStacks - this.LeftoverStacks) : g_BrivUserSettings[ "TargetStacks" ]
-        
+
         stackfail := 0
         forcedResetReason := ""
         ; passed stack zone, start stack farm. Normal operation.
         if (stacks < targetStacks AND CurrentZone > g_BrivUserSettings[ "StackZone" ])
         {
             ; normal-success / adjusted-sucess behavior. Use settings zone or adjusted zone if good zone has been found. (Resets to StackZone for 3 runs before sticking)
-            if (this.LastStackSuccessArea == CurrentZone ) 
+            if (this.LastStackSuccessArea == CurrentZone )
                 this.StackFarm()
             ; abnormal stacking - Normal zone failed, current zone is later and has 0 or "" failures on this zone. Try it.
-            else if (!this.StackFailAreasTally[CurrentZone] ) 
+            else if (!this.StackFailAreasTally[CurrentZone] )
                 this.StackFarm()
-            ; only stack farm if this zone hasn't been tried this run yet and still below max tries. 
+            ; only stack farm if this zone hasn't been tried this run yet and still below max tries.
             else if (this.LastStackSuccessArea == 0 AND !this.StackFailAreasThisRunTally[CurrentZone] AND this.StackFailAreasTally[CurrentZone] < this.MaxStackRestartFails)
                 this.StackFarm()
             ; Safety - One more jump will be over modron reset and stacking has not been done.
@@ -328,7 +323,7 @@ class IC_BrivGemFarm_Class
             g_SharedData.StackFailStats.TALLY[stackfail] += 1
             forcedResetReason := " Stacks > target stacks & party > " . g_BrivUserSettings["ResetZoneBuffer"] . " levels past stack zone"
             g_SF.RestartAdventure(forcedResetReason)
-        }           
+        }
         return stackfail
     }
 
@@ -337,7 +332,7 @@ class IC_BrivGemFarm_Class
     {
         gemsMax := g_BrivUserSettings[ "ForceOfflineGemThreshold" ]
         runsMax := g_BrivUserSettings[ "ForceOfflineRunThreshold" ]
-        ; hybrid stacking not used. Use default test for offline stacking. 
+        ; hybrid stacking not used. Use default test for offline stacking.
         if !( (gemsMax > 1) OR (runsMax > 0) )
         {
             return ( g_BrivUserSettings [ "RestartStackTime" ] > 0 )
@@ -425,6 +420,7 @@ class IC_BrivGemFarm_Class
             this.StackNormal()
         ; SetFormation needs to occur before dashwait in case game erronously placed party on boss zone after stack restart
         g_SF.SetFormation(g_BrivUserSettings) 
+        g_SF.SetFormation(g_BrivUserSettings)
         if (g_SF.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1 )
@@ -432,9 +428,7 @@ class IC_BrivGemFarm_Class
 
     /*  StackRestart - Stack Briv's SteelBones by switching to his formation and restarting the game.
                        Attempts to buy are open chests while game is closed.
-
     Parameters:
-
     Returns:
     */
     ; Stack Briv's SteelBones by switching to his formation and restarting the game.
@@ -506,14 +500,12 @@ class IC_BrivGemFarm_Class
             this.LastStackSuccessArea := g_SF.CurrentZone
         }
         g_PreviousZoneStartTime := A_TickCount
-        return 
+        return
     }
 
     /*  StackNormal - Stack Briv's SteelBones by switching to his formation and waiting for stacks to build.
-
     Parameters:
     maxOnlineStackTime -  Maximum time in ms script will spend stacking. Default is 5 minutes.
-
     Returns:
     */
     ; Stack Briv's SteelBones by switching to his formation.
@@ -573,7 +565,7 @@ class IC_BrivGemFarm_Class
             g_SF.SafetyCheck()
             return StackFailStates.FAILED_TO_CONVERT_STACKS ; 2
         }
-        ; all stacks were lost on reset. Stack leeway given for automatic calc variations. 
+        ; all stacks were lost on reset. Stack leeway given for automatic calc variations.
         if ((g_SF.Memory.ReadHasteStacks() + variationLeeway) < targetStacks AND g_SF.Memory.ReadSBStacks() <= variationLeeway)
         {
             g_SharedData.StackFailStats.TALLY[StackFailStates.FAILED_TO_KEEP_STACKS] += 1
@@ -587,115 +579,30 @@ class IC_BrivGemFarm_Class
     ;===========================================================
     /*  DoPartySetup - When gem farm is started or an adventure is reloaded, this is called to set up the primary party.
                        Levels Shandie and Briv, waits for Shandie Dash to start, completes the quests of the zone and then go time.
-
-        Parameters: init - On first pass, levels up speed champs first
-
-        Returns: array - Leftover keys to level up non-speed champs in the Q formation
+        Parameters:
+        Returns:
     */
-    DoPartySetup( init := 0)
+    DoPartySetup()
     {
-        if (init)
-            g_SharedData.LoopString := "Leveling champions"
+        g_SharedData.LoopString := "Leveling champions"
         formationFavorite1 := g_SF.Memory.GetFormationByFavorite( 1 )
-        minLevels := {}, maxLevels := {}
-        maxLevels[58] := g_BrivUserSettings[ "BrivMaxLevel" ] ; Briv
-        minLevels[58] := maxLevels[58] >= 170 ? 170 : 80
-        minLevels[47] := 120, maxLevels[47] := 120 ; Shandie
-        minLevels[91] := 1, maxLevels[91] := 260 ; Widdle 260 310 350
-        minLevels[75] := 175, maxLevels[75] := 220 ; Hew Maan 40 200 220 360
-        minLevels[102] := 90, maxLevels[102] := 250 ; Nahara
-        minLevels[52] := 80, maxLevels[52] := 80 ; Sentry
-        minLevels[115] := 100, maxLevels[115] := 100 ; Virgil
-        minLevels[89] := 1, maxLevels[89] := 1 ; D'hani
-        minLevels[114] := 1, maxLevels[114] := 1 ; Kent
-        minLevels[98] := 1, maxLevels[98] := 1 ; Gazrick 1540
-        minLevels[79] := 1, maxLevels[79] := 1 ; Shaka
-        minLevels[81] := 1, maxLevels[81] := 1 ; Selise
-        minLevels[56] := 165, maxLevels[56] := 165 ; Havilar
-        minLevels[95] := 100, maxLevels[95] := 100 ; Vi 100 250
-        minLevels[70] := 90, maxLevels[70] := 90 ; Ezmeralda 90 315
-        minLevels[12] := 65, maxLevels[12] := 65 ; Arkhan
-        minLevels[4] := 1, maxLevels[4] := 2150 ; Jarlaxle
-        minLevels[39] := 1, maxLevels[39] := 3440 ; Paultin
-        minLevels[113] := 1, maxLevels[113] := 1400 ; Egbert
-        minLevels[94] := 1, maxLevels[94] := 2640 ; Rust
-        minLevels[30] := 1, maxLevels[30] := 2020 ; Azaka
-        ; Level up speed champs first, priority to getting Briv, Shandie, Hew Maan, Nahara, Sentry, Virgil speed effects
-        if (init)
+        isShandieInFormation := g_SF.IsChampInFormation( 47, formationFavorite1 )
+        g_SF.LevelChampByID( 58, 170, 7000, "{q}") ; level briv
+        if (isShandieInFormation)
+            g_SF.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
+        isHavilarInFormation := g_SF.IsChampInFormation( 56, formationFavorite1 )
+        if (isHavilarInFormation)
+            g_SF.LevelChampByID( 56, 15, 7000, "{q}") ; level havi
+        if (g_BrivUserSettings[ "Fkeys" ])
         {
-            g_SF.DirectedInput(,, "{q}") ; switch to Briv in slot 5
-            ;champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95]
-            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 98, 79, 81, 95]
-            keyspam := []
-            for k, champID in champIDs
-            {
-                if (g_SF.IsChampInFormation(champID, formationFavorite1) AND g_SF.Memory.ReadChampLvlByID(champID) < minLevels[champID])
-                    keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}")
-            }
-        }
-        else
-        {
-            ; Level up all champs to the specified max level
-            champIDs := [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95, 56, 70, 12, 4, 39, 113, 94, 30]
-            if (maxLevels[58] < 170)
-            {
-                targetStacks := g_BrivUserSettings[ "AutoCalculateBrivStacks" ] ? (this.TargetStacks - this.LeftoverStacks) : g_BrivUserSettings[ "TargetStacks" ]
-                if g_SF.Memory.ReadSBStacks() >= targetStacks
-                    maxLevels[58] := 170
-            }
-        }
-        setupDone := False
-        while(!setupDone)
-        {
-            if (init)
-                g_SF.DirectedInput(,, keyspam*) ; level up all champs once
-            for champID, targetLevel in init ? minLevels : maxLevels
-            {
-                if (g_SF.IsChampInFormation(champID, formationFavorite1))
-                {
-                    level := g_SF.Memory.ReadChampLvlByID(champID)
-                    Fkey := "{F" . g_SF.Memory.ReadChampSeatByID(champID) . "}"
-                    if (init AND level >= targetLevel)
-                    {
-                        for k, v in keyspam
-                        {
-                            if (v == Fkey)
-                                keyspam.Delete(k)
-                        }
-                    }
-                    else if (!init AND level < targetLevel)
-                    {
-                        g_SF.DirectedInput(,, Fkey) ; level up single champ once
-                        return keyspam*
-                    }
-                }
-            }
-            g_SF.SetFormation(g_BrivUserSettings) ; switch to E formation if necessary
-            if (!init)
-                return keyspam*
-            if (keyspam.Length() == 0 OR (A_TickCount - StartTime) > 5000)
-                setupDone := true
-            Sleep, 20
-        }
-        g_SF.DirectedInput(hold:=0,, keyspam*)
-        if(g_BrivUserSettings[ "Fkeys" ])
-        {
-            for k, v in formationFavorite1
-            {
-                for k1, v1 in [58, 47, 91, 75, 102, 52, 115, 89, 114, 98, 79, 81, 95, 56, 70, 12, 4, 39, 113, 94, 30]
-                {
-                    if (v <= 0 OR v == v1)
-                        continue 2
-                }
-                keyspam.Push("{F" . g_SF.Memory.ReadChampSeatByID(v) . "}")
-            }
-            g_SF.DirectedInput(,release :=0, keyspam*) ; keysdown
+            keyspam := g_SF.GetFormationFKeys(g_SF.Memory.GetActiveModronFormation()) ; level other formation champions
+            keyspam.Push("{ClickDmg}")
+            g_SF.DirectedInput(,release :=0, keyspam*) ;keysdown
         }
         g_SF.ModronResetZone := g_SF.Memory.GetModronResetArea() ; once per zone in case user changes it mid run.
         if (g_SF.ShouldDashWait())
             g_SF.DoDashWait( Max(g_SF.ModronResetZone - g_BrivUserSettings[ "DashWaitBuffer" ], 0) )
         g_SF.ToggleAutoProgress( 1, false, true )
-        return keyspam*
     }
 
     ;Waits for modron to reset. Closes IC if it fails.
@@ -743,7 +650,7 @@ class IC_BrivGemFarm_Class
         team := {1:"Speed", 2:"Stack Farm", 3:"Speed No Briv"}
         testFunc := ObjBindMethod(g_SF, "IsChampInFavoriteFormation", champID, favorite ) ; don't ignore empty
         foundChampName := g_SF.Memory.ReadChampNameByID(champID)
-        
+
         errMsg := "Please confirm " . foundChampName . stateText . (includeChampion ? " is" : " is NOT") .  " saved in formation favorite slot " . favorite . ". " . txtCheck
         formation := g_SF.RetryTestOnError(errMsg, testFunc, expectedVal := True, shouldBeEqual := includeChampion)
         if (formation == -1)
@@ -756,7 +663,7 @@ class IC_BrivGemFarm_Class
     {
         formationSlot := this.TestFormationSlotByFavorite( favorite , txtcheck)
         if (formationSlot == -1)
-            return -1 
+            return -1
         formation := this.TestFormationFavorite(formationSlot, favorite, txtcheck)
         if (formation == -1)
             return -1
@@ -878,7 +785,7 @@ class IC_BrivGemFarm_Class
     ; Builds a string that shows how many chests have been opened/bought above the values passed into this function.
     GetChestDifferenceString(lastPurchasedSilverChests, lastPurchasedGoldChests, lastOpenedGoldChests, lastOpenedSilverChests )
     {
-        boughtSilver := g_SharedData.PurchasedSilverChests - lastPurchasedSilverChests 
+        boughtSilver := g_SharedData.PurchasedSilverChests - lastPurchasedSilverChests
         boughtGold := g_SharedData.PurchasedGoldChests - lastPurchasedGoldChests
         openedSilver := g_SharedData.OpenedSilverChests - lastOpenedSilverChests
         openedGold := g_SharedData.OpenedGoldChests - lastOpenedGoldChests
@@ -890,16 +797,14 @@ class IC_BrivGemFarm_Class
     }
 
     /*  BuyChests - A method to buy chests based on parameters passed.
-
         Parameters:
         chestID   - The ID of the chest to be bought. Default is 1 (silver).
         startTime - The number of milliseconds that have elapsed since the system was started, up to 49.7 days.
             Used to estimate if there is enough time to perform those actions before attempting to do them.
         numChests - expected number of chests to buy. Default is 100.
-            
+
         Return Values:
         None
-
         Side Effects:
         On success, will update g_SharedData.PurchasedSilverChests and g_SharedData.PurchasedGoldChests.
         On success, will update g_SF.TotalSilverChests, g_SF.TotalGoldChests, g_SF.TotalGems
@@ -926,17 +831,13 @@ class IC_BrivGemFarm_Class
     }
 
     /*  OpenChests - A method to open chests based on parameters passed.
-
         Parameters:
         chestID   - The ID of the chest to be bought. Default is 1 (silver).
         startTime - The number of milliseconds that have elapsed since the system was started, up to 49.7 days.
             Used to estimate if there is enough time to perform those actions before attempting to do them.
         numChests - expected number of chests to open. Default is 100.
-
-
         Return Values:
         None
-
         Side Effects:
         On success, will update g_SharedData.OpenedSilverChests and g_SharedData.OpenedGoldChests.
         On success, will update g_SF.TotalSilverChests, g_SF.TotalGoldChests, g_SF.TotalGems
