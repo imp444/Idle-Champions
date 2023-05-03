@@ -14,6 +14,6 @@ AddOns/IC_BrivGemFarm_Private/
 #AddonManagement Addon ignores
 AddOns/GeneratedAddonInclude.ahk
 AddOns/IC_Addon_Management/AddonManagement.json
-AddOns/IC_BrivGemFarm_Performance/LastGUID_BrivGemFarm.json
 Themes/CurrentTheme.json
-AddOns/IC_BrivGemFarm_LevelUp/HeroDefines.json
+AddOns/IC_BrivGemFarm_Performance/LastGUID_BrivGemFarm.json
+AddOns/IC_BrivGemFarm_Performance/LastGUID_Miniscripts.json
