@@ -1,3 +1,19 @@
+June 16, 2023
+    Fixed bug with addon ordering not loading correctly. (Thanks ImpEGamer)
+    Updated 64 bit Imports for v520.
+    Added current zone to game is stuck message restart message.
+
+June 14, 2023
+    Fixed some edge case stack counts that could cause issues. (Thanks ekstergans)
+    Fixed Nodrom typos.
+    Updated how stack saves work on modron reset so the script doesn't hang before leveling champions on zone 1 if there's a network/server problem.
+    Reverted https usage to http due to some connection issues.
+
+June 4, 2023
+    Updated default play server from ps23 to ps22 since ps23 was shut down.
+    Updated timeouts on save calls to help reduce script lag on modron reset.
+    Updated 64 bit Imports for v517.
+
 May 20, 2023
     Updated BrivGemFarm to open up to 1000 chests at once on stack restart.
     Updated BrivGemFarm to open how many chests there are time for instead of not opening any if the max can't be opened.

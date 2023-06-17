@@ -26,7 +26,7 @@ class IC_ServerCalls_Class
     userDetails := ""
     activePatronID := 0
     dummyData := ""
-    webRoot := "https://ps21.idlechampions.com/~idledragons/"
+    webRoot := "http://ps21.idlechampions.com/~idledragons/"
     timeoutVal := 60000
     playServerExcludes := "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
 
@@ -41,7 +41,7 @@ class IC_ServerCalls_Class
 
     GetVersion()
     {
-        return "v2.4.0, 2022-07-17"
+        return "v2.4.1, 2023-06-14"
     }
 
     UpdateDummyData()
@@ -202,7 +202,7 @@ class IC_ServerCalls_Class
         URLtoCall := this.webroot . "post.php?call=saveuserdetails&"
         WR := ComObjCreate( "WinHttp.WinHttpRequest.5.1" )
         ; https://learn.microsoft.com/en-us/windows/win32/winhttp/iwinhttprequest-settimeouts defaults: 0 (DNS Resolve), 60000 (connection timeout. 60s), 30000 (send timeout), 60000 (receive timeout)
-        WR.SetTimeouts( "0", "60000", "30000", "120000" )
+        WR.SetTimeouts( "0", "15000", "7500", "30000" )
         ; WR.SetProxy( 2, "IP:PORT" )  Send web traffic through a proxy server. A local proxy may be helpful for debugging web calls.
         Try {
             WR.Open( "POST", URLtoCall, true )
@@ -249,7 +249,7 @@ class IC_ServerCalls_Class
         {
             if A_Index in % this.playServerExcludes
                 continue
-            this.webRoot := "https://ps" . A_Index . ".idlechampions.com/~idledragons/"
+            this.webRoot := "http://ps" . A_Index . ".idlechampions.com/~idledragons/"
             response := this.CallGetPlayServer()
             testCount := 1
             if (response != "" and response.processing_time != "")
@@ -294,7 +294,7 @@ class IC_ServerCalls_Class
         else
         {
             oldWebRoot := this.webRoot
-            this.webRoot := "https://ps21.idlechampions.com/~idledragons/" ; assume ps23 will always be available (avoiding using master)
+            this.webRoot := "https://ps21.idlechampions.com/~idledragons/" ; assume ps21 will always be available (avoiding using master)
             response := this.CallGetPlayServer()
             if (response != "" AND response.play_server != "")
                 this.webRoot := response.play_server

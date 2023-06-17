@@ -73,7 +73,7 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
         g_SharedData.LoopString := "Modron Resetting..."
         this.SetUserCredentials()
         if (this.sprint != "" AND this.steelbones != "" AND (this.sprint + this.steelbones) < 190000)
-            response := g_serverCall.CallPreventStackFail( this.sprint + this.steelbones)
+            response := g_serverCall.CallPreventStackFail( this.sprint + this.steelbones, true)
         while (this.Memory.ReadResetting() AND ElapsedTime < timeout)
         {
             ElapsedTime := A_TickCount - StartTime
@@ -126,20 +126,29 @@ class IC_BrivSharedFunctions_Class extends IC_SharedFunctions_Class
 class IC_BrivServerCall_Class extends IC_ServerCalls_Class
 {
     ; forces an attempt for the server to remember stacks
-    CallPreventStackFail(stacks)
+    CallPreventStackFail(stacks, launchScript := False)
     {
         response := ""
         stacks := g_SaveHelper.GetEstimatedStackValue(stacks)
         userData := g_SaveHelper.GetCompressedDataFromBrivStacks(stacks)
         checksum := g_SaveHelper.GetSaveCheckSumFromBrivStacks(stacks)
         save :=  g_SaveHelper.GetSave(userData, checksum, this.userID, this.userHash, this.networkID, this.clientVersion, this.instanceID)
-        try
+        if (launchScript) ; do server call from new script to prevent hanging script due to network issues.
         {
-            response := this.ServerCallSave(save)
+            webRoot := this.webRoot
+            scriptLocation := A_LineFile . "\..\IC_BrivGemFarm_SaveStacks.ahk"
+            Run, %A_AhkPath% "%scriptLocation%" "%webRoot%" "%save%"
         }
-        catch, ErrMsg
+        else
         {
-            g_SharedData.LoopString := "Failed to save Briv stacks"
+            try
+            {
+                response := this.ServerCallSave(save)
+            }
+            catch, ErrMsg
+            {
+                g_SharedData.LoopString := "Failed to save Briv stacks"
+            }
         }
         return response
     }
@@ -296,7 +305,7 @@ class IC_BrivGemFarm_Class
             return 0
         }
         ; stack briv between min zone and stack zone if briv is out of jumps (if stack fail recovery is on)
-        if (g_SF.Memory.ReadHasteStacks() < 50 AND g_SF.Memory.ReadSBStacks() < targetStacks AND CurrentZone >= g_BrivUserSettings[ "MinStackZone" ] AND g_BrivUserSettings[ "StackFailRecovery" ] AND CurrentZone < g_BrivUserSettings[ "StackZone" ] )
+        if (g_SF.Memory.ReadHasteStacks() < 50 AND stacks < targetStacks AND CurrentZone >= g_BrivUserSettings[ "MinStackZone" ] AND g_BrivUserSettings[ "StackFailRecovery" ] AND CurrentZone < g_BrivUserSettings[ "StackZone" ] )
         {
             ; only use current zone if there's been no/non-excess issues with it.
             if (!this.StackFailAreasThisRunTally[CurrentZone] AND (!this.StackFailAreasTally[CurrentZone] OR this.StackFailAreasTally[CurrentZone] < this.MaxStackRestartFails))
@@ -309,7 +318,7 @@ class IC_BrivGemFarm_Class
             return 0
         }
         ; Briv ran out of jumps but has enough stacks for a new adventure, restart adventure. With protections from repeating too early or resetting within 5 zones of a reset.
-        if (g_SF.Memory.ReadHasteStacks() < 50 AND stacks > targetStacks AND g_SF.Memory.ReadHighestZone() > 10 AND (g_SF.Memory.GetModronResetArea() - g_SF.Memory.ReadHighestZone() > 5 ))
+        if (g_SF.Memory.ReadHasteStacks() < 50 AND stacks >= targetStacks AND g_SF.Memory.ReadHighestZone() > 10 AND (g_SF.Memory.GetModronResetArea() - g_SF.Memory.ReadHighestZone() > 5 ))
         {
             stackFail := StackFailStates.FAILED_TO_REACH_STACK_ZONE_HARD ; 4
             g_SharedData.StackFailStats.TALLY[stackfail] += 1
@@ -318,7 +327,7 @@ class IC_BrivGemFarm_Class
         }
         ; stacks are more than the target stacks and party is more than "ResetZoneBuffer" levels past stack zone, restart adventure
         ; (for restarting after stacking without going to modron reset level)
-        if (stacks > targetStacks AND CurrentZone > g_BrivUserSettings[ "StackZone" ] + g_BrivUserSettings["ResetZoneBuffer"])
+        if (stacks >= targetStacks AND CurrentZone > g_BrivUserSettings[ "StackZone" ] + g_BrivUserSettings["ResetZoneBuffer"])
         {
             stackFail := StackFailStates.FAILED_TO_RESET_MODRON ; 6
             g_SharedData.StackFailStats.TALLY[stackfail] += 1
