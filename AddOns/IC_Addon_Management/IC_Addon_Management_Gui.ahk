@@ -1,5 +1,3 @@
-Gui, AddonManagement:New
-
 Gui, AddonManagement:New , ,Addon Management
 GUIFunctions.LoadTheme("AddonManagement")
 Gui, AddonManagement:+Resize -MaximizeBox
@@ -13,7 +11,7 @@ GUIFunctions.UseThemeListViewBackgroundColor("AddonsAvailableID")
 AddonManagement.GenerateListViewContent("AddonManagement", "AddonsAvailableID")
 GUIFunctions.LVM_CalculateSize(hLV,-1,AddonLVWidth,AddonLVHeight)
 AddonLVWidth+=4
-AddonLVHeight+=4
+AddonLVHeight+=30
 ControlMove,,,,,AddonLVHeight,ahk_id %hLV%
 
 
@@ -39,7 +37,6 @@ AddonManagementGuiClose(){
 			AddonManagement.GetAddonManagementSettings()
 			AddonManagement.GenerateListViewContent("AddonManagement", "AddonsAvailableID")
 		}
-
 	}
 }
 
@@ -74,7 +71,7 @@ AddonManagementMoveUpClicked(){
 				LV_Modify(WantedRow, "Select")
 			}
 			else{
-				msgbox Can't move above a dependancy.
+				msgbox Can't move above a dependency.
 			}			
 		}
 	}
@@ -106,4 +103,8 @@ AddonManagementInfoClicked(){
 
 AddonManagementSaveClicked(){
 	AddonManagement.WriteAddonManagementSettings()
+	AddonManagement.NeedSave := 0
+	MsgBox, 36, Restart, To activate changes to enabled/disabled addons you need to restart the script.`nDo you want to do this now?
+	IfMsgBox, Yes
+		Reload
 }
