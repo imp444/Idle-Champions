@@ -15,7 +15,7 @@ ReloadBrivGemFarmSettings(loadFromFile := True)
     if ( g_BrivUserSettings[ "StackZone" ] == "" )
         g_BrivUserSettings[ "StackZone" ] := 700
     if (g_BrivUserSettings[ "TargetStacks" ] == "")
-        g_BrivUserSettings[ "TargetStacks" ] := 4000
+        g_BrivUserSettings[ "TargetStacks" ] := 0
     if ( g_BrivUserSettings[ "RestartStackTime" ] == "" )
         g_BrivUserSettings[ "RestartStackTime" ] := 12000
     if ( g_BrivUserSettings[ "BuySilvers" ] == "" )
@@ -63,9 +63,9 @@ ReloadBrivGemFarmSettings(loadFromFile := True)
     if ( g_BrivUserSettings[ "DisableDashWait" ] == "" )
         g_BrivUserSettings[ "DisableDashWait" ] := false
     if ( g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ] == "" )
-        g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ] := false
+        g_BrivUserSettings[ "RestoreLastWindowOnGameOpen" ] := true
     if ( g_BrivUserSettings[ "AutoCalculateBrivStacks" ] == "" )
-        g_BrivUserSettings[ "AutoCalculateBrivStacks" ] := true
+        g_BrivUserSettings[ "AutoCalculateBrivStacks" ] := False
     if (g_BrivUserSettings[ "AutoCalculateWorstCase" ] == "" )
         g_BrivUserSettings[ "AutoCalculateWorstCase" ] := true
     if ( g_BrivUserSettings[ "PreferredBrivJumpZones" ] == "")
