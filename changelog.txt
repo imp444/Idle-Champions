@@ -1,3 +1,8 @@
+September 2, 2023
+    Added an option to copy EGS launch code instead of game exe location in game location settings.
+    Updated ServerCalls version number.
+    Updated 64 bit Imports for v533.
+
 August 22, 2023
     Updated ServerCalls to respect the play server switches.
     Updated ServerCalls to limit server switch attempts to three.
