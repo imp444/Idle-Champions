@@ -57,7 +57,7 @@ class IC_MemoryFunctions_Class
     ;Updates installed after the date of this script may result in the pointer addresses no longer being accurate.
     GetVersion()
     {
-        return "v2.1.0, 2023-4-8, IC v0.463+"
+        return "v2.1.1, 2023-9-3, IC v0.463+"
     }
 
     GetPointersVersion()
@@ -71,7 +71,8 @@ class IC_MemoryFunctions_Class
     ;Automatically selects offsets used depending on if process is 64bit or not (epic or steam)
     OpenProcessReader()
     {
-        _MemoryManager.exeName := g_userSettings[ "ExeName" ]
+        global g_UserSettings
+        _MemoryManager.exeName := g_UserSettings[ "ExeName" ]
         _MemoryManager.Refresh()
         if(_MemoryManager.handle == "")
             MsgBox, , , Could not read from exe. Try running as Admin. , 7
@@ -190,6 +191,8 @@ class IC_MemoryFunctions_Class
         multiplierTotal := 1
         i := 0
         size := this.ReadTimeScaleMultipliersCount()
+        if(size <= 0 OR size > 100) ; sanity check, should be a positive integer and less than 10's. (Potions, 12 possible champions + feats, modron nodes)
+            return ""
         loop, %size%
         {
             value := this.ReadTimeScaleMultiplierByIndex(i)
@@ -334,6 +337,8 @@ class IC_MemoryFunctions_Class
         splitStringArray := StrSplit(gameLoc, "\")
         newString := ""
         size := splitStringArray.Count() - 1
+        if(size <= 0 OR size > 100) ; sanity check for number directory path folders
+            return ""
         loop, %size%
         {
             newString := newString . splitStringArray[A_Index] . "\"
@@ -450,7 +455,7 @@ class IC_MemoryFunctions_Class
     GetFormationFieldFamiliarsBySlot( slot := 0)
     {
         size := this.GameManager.game.gameInstances[this.GameInstance].FormationSaveHandler.formationSavesV2[slot].Familiars["Clicks"].List.size.Read()
-        if(size <= 0 OR size > 10) ; sanity check, should be < 6 but set to 10 in case of game field familiar increase.
+        if(size <= 0 OR size > 10) ; sanity check, should be < 6 but set to 10 in case of future game field familiar increase.
             return ""
         familiarList := {}
         Loop, %size%
@@ -526,6 +531,8 @@ class IC_MemoryFunctions_Class
     {
         ;reads memory for the number of cores        
         saveSize := this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.ModronHandler.modronSaves.size.Read()
+        if(saveSize <= 0 OR saveSize > 50000) ; sanity check, should be a positive integer and less than 2005 as that is max allowed area as of 2023-09-03
+            return ""
         ;cycle through saved formations to find save slot of Favorite
         loop, %saveSize%
         {
@@ -541,6 +548,8 @@ class IC_MemoryFunctions_Class
     {
         ;reads memory for the number of cores        
         saveSize := this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.ModronHandler.modronSaves.size.Read()
+        if(saveSize <= 0 OR saveSize > 20) ; sanity check, should be less than 4 as of 2023-09-03
+            return ""
         ;cycle through saved formations to find save slot of Favorite
         loop, %saveSize%
         {
@@ -611,6 +620,8 @@ class IC_MemoryFunctions_Class
     {
         Formation := Array()
         _size := this.GameManager.game.gameInstances[this.GameInstance].FormationSaveHandler.formationSavesV2[slot].Formation.size.Read()
+        if(_size <= 0 OR _size > 500) ; sanity check, should be less than 51 as of 2023-09-03
+            return ""
         loop, %_size%
         {
             champID := this.GameManager.game.gameInstances[this.GameInstance].FormationSaveHandler.formationSavesV2[slot].Formation[A_Index - 1].Read()
@@ -627,6 +638,8 @@ class IC_MemoryFunctions_Class
     {
         ;reads memory for the number of saved formations
         formationSavesSize := this.ReadFormationSavesSize()
+        if(formationSavesSize <= 0 OR formationSavesSize > 500) ; sanity check, should be less than 51 as of 2023-09-03
+            return ""
         ;cycle through saved formations to find save slot of Favorite
         formationSaveSlot := -1
         loop, %formationSavesSize%
@@ -652,6 +665,8 @@ class IC_MemoryFunctions_Class
     GetCurrentFormation()
     {
         size := this.GameManager.game.gameInstances[this.GameInstance].Controller.formation.slots.size.Read()
+        if(size <= 0 OR size > 14) ; sanity check, 12 is the max number of concurrent champions possible.
+            return ""
         formation := size > 0 ? Array() : ""
         loop, %size%
         {
@@ -792,6 +807,8 @@ class IC_MemoryFunctions_Class
         ; Find the  index (slot) of the formation with the correct SaveID
         ;formationSaveID := 132
         formationSavesSize := this.ReadFormationSavesSize()
+        if(formationSavesSize <= 0 OR formationSavesSize > 500) ; sanity check, should be < 51 saves per map.
+            return ""
         formationSaveSlot := -1
         loop, %formationSavesSize%
         {
@@ -826,8 +843,10 @@ class IC_MemoryFunctions_Class
     {
         modronSavesSlot := ""
         activeGameInstance := this.ReadActiveGameInstance()
-        moronSavesSize := this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.ModronHandler.modronSaves.size.Read()
-        loop, %moronSavesSize%
+        modronSavesSize := this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.ModronHandler.modronSaves.size.Read()
+        if(modronSavesSize <= 0 OR modronSavesSize > 20) ; sanity check, should be < 5 as of 2023-09-03
+            return ""
+        loop, %modronSavesSize%
         {
             if (this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.ModronHandler.modronSaves[A_Index - 1].InstanceID.Read() == activeGameInstance)
             {
@@ -965,7 +984,7 @@ class IC_MemoryFunctions_Class
     GetBlessingsDialogSlot()
     {
         size := this.ReadDialogsListSize()
-        if(size > 50 OR size < 0)
+        if(size > 50 OR size < 0) ; sanity check
             return ""
         loop, %size%
         {
@@ -988,7 +1007,7 @@ class IC_MemoryFunctions_Class
         if (dialogName == 1)                        ; Allows FullMemoryFunctions to not automatically error.
             dialogName := "LoadingTextBox"
         size := this.ReadDialogsListSize()
-        if(size > 50 OR size < 0) ; bounds check in case of bad read.
+        if(size > 50 OR size < 0) ; sanity check in case of bad read.
             return ""
         found := 0
         loop, %size%
