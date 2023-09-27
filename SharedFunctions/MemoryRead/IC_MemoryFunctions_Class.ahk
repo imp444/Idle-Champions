@@ -57,7 +57,7 @@ class IC_MemoryFunctions_Class
     ;Updates installed after the date of this script may result in the pointer addresses no longer being accurate.
     GetVersion()
     {
-        return "v2.1.1, 2023-9-3, IC v0.463+"
+        return "v2.1.2, 2023-9-13, IC v0.463+"
     }
 
     GetPointersVersion()
@@ -1085,7 +1085,11 @@ class IC_MemoryFunctions_Class
             return champID - 1
         if(champID == 107)
             return ""
-        return champID - 2
+        if(champID < 135)
+            return champID - 2
+        if(champID == 135)
+            return ""            
+        return champID - 3
     }
 
     ; Builds this.ChestIndexByID from memory values.
