@@ -57,7 +57,7 @@ class IC_MemoryFunctions_Class
     ;Updates installed after the date of this script may result in the pointer addresses no longer being accurate.
     GetVersion()
     {
-        return "v2.1.2, 2023-9-13, IC v0.463+"
+        return "v2.1.3, 2023-10-6, IC v0.463+"
     }
 
     GetPointersVersion()
@@ -265,6 +265,11 @@ class IC_MemoryFunctions_Class
     ReadChampHealthByID(ChampID := 0 )
     {
         return this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.HeroHandler.heroes[this.GetHeroHandlerIndexByChampID(ChampID)].health.Read()
+    }
+
+    ReadChampIDByIndex(ChampListIndex := 0)
+    {
+        return this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.HeroHandler.heroes[ChampListIndex].def.ID.Read()
     }
 
     ReadChampSlotByID(ChampID := 0)
@@ -1083,13 +1088,20 @@ class IC_MemoryFunctions_Class
     {
         if(champID < 107)
             return champID - 1
+        ; No define exists for ID 107
         if(champID == 107)
             return ""
         if(champID < 135)
             return champID - 2
+        ; No define exists for ID 135            
         if(champID == 135)
-            return ""            
-        return champID - 3
+            return ""
+        if(champID < 137)
+            return champID - 3
+        ; No define exists for ID 137
+        if(champID == 137)
+            return ""
+        return champID - 4
     }
 
     ; Builds this.ChestIndexByID from memory values.
