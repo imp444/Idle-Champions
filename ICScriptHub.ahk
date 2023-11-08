@@ -23,7 +23,7 @@ CoordMode, Mouse, Client
 ;Modron Automation Gem Farming Script
 GetScriptHubVersion()
 {
-    return "v3.6.0, 2023-03-20"
+    return "v3.6.1, 2023-10-31"
 }
 
 ;class and methods for parsing JSON (User details sent back from a server call)
@@ -113,7 +113,14 @@ Reload_Clicked()
 Launch_Clicked()
 {
     programLoc := g_UserSettings[ "InstallPath" ]
-    Run, %programLoc%
+    try
+    {
+        Run, %programLoc%
+    }
+    catch
+    {
+        MsgBox, 48, Unable to launch game, `nVerify the game location is set properly by enabling the Game Location Settings addon, clicking Change Game Location on the Briv Gem Farm tab, and ensuring the launch command is set properly.
+    }
     Process, Exist, % g_UserSettings[ "ExeName"]
     g_SF.PID := ErrorLevel
 }

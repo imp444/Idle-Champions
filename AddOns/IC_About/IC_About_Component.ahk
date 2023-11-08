@@ -3,10 +3,18 @@ GUIFunctions.AddTab("About")
 
 Gui, ICScriptHub:Tab, About
 GUIFunctions.UseThemeTextColor()
-aboutRows := 19
+aboutRows := 21
 aboutGroupBoxHeight := aboutRows * 15
 Gui, ICScriptHub:Add, GroupBox, x+15 y+15 w425 h%aboutGroupBoxHeight% vAboutVersionGroupBox, Version Info: 
-Gui, ICScriptHub:Add, Text, vVersionStringID xp+20 yp+25 w400 r%aboutRows%, % IC_About_Component.GetVersionString()
+Gui, ICScriptHub:Add, Text, vAboutVersionStringID xp+20 yp+25 w400 r%aboutRows%, % IC_About_Component.GetVersionString()
+
+AboutEnabledAddonsString := IC_About_Component.GetEnabledAddons()
+AboutAddonGroupBoxHeight := (AboutEnabledAddonsRows + 2) * 15
+GuiControlGet, xyVal, ICScriptHub:Pos, AboutVersionGroupBox
+xyValX += 0
+xyValY += (aboutGroupBoxHeight + 15)
+Gui, ICScriptHub:Add, GroupBox, x%xyValX% y%xyValY% w425 h%AboutAddonGroupBoxHeight% vAboutAddonGroupBox, Enabled Addons: 
+Gui, ICScriptHub:Add, Text, vAboutAddonStringID xp+20 yp+25 w400 r%AboutEnabledAddonsRows%, % AboutEnabledAddonsString
 
 if(isFunc(g_SF.Memory.GetPointersVersion) AND isFunc(g_SF.Memory.ReadGameVersion))
 {
@@ -39,7 +47,11 @@ class IC_About_Component
         if(isFunc(IC_CrusadersGameDataSet_Class.GetVersion))
             string .= "CrusadersGameDataSet Memory: " . IC_CrusadersGameDataSet_Class.GetVersion() . "`n"
         if(isFunc(IC_DialogManager_Class.GetVersion))
-            string .= "DialogManager Memory: " . IC_DialogManager_Class.GetVersion() . "`n`n"
+            string .= "DialogManager Memory: " . IC_DialogManager_Class.GetVersion() . "`n"
+        if(isFunc(IC_UserStatHandler_Class.GetVersion))
+            string .= "UserStatHandler Memory: " . IC_UserStatHandler_Class.GetVersion() . "`n"    
+        if(isFunc(IC_UserData_Class.GetVersion))
+            string .= "UserData Memory: " . IC_UserData_Class.GetVersion() . "`n"           
         if(isFunc(IC_ActiveEffectKeyHandler_Class.GetVersion))
             string .= "EffectKeyHandler Memory: " . IC_ActiveEffectKeyHandler_Class.GetVersion() . "`n`n"
         if(isFunc(IC_SharedFunctions_Class.GetVersion))
@@ -48,7 +60,20 @@ class IC_About_Component
             string .= "ServerCalls Version: " . IC_ServerCalls_Class.GetVersion() . "`n"
         if(isFunc(_classLog.GetVersion))
             string .= "Log Class Version: " . _classLog.GetVersion() . "`n"
-        string .= "`nAHK Version: " . A_AhkVersion "`n"
+        string .= "`nAHK Version: " . A_AhkVersion
+        return string
+    }
+
+    GetEnabledAddons()
+    {
+        string := ""
+        global AboutEnabledAddonsRows := 0
+        for k,v in AddonManagement.EnabledAddons
+        {
+            string .= v.Name . " Version: " . v.Version . "`n"
+            AboutEnabledAddonsRows++
+        }
+        string := RTrim(string, "`n")
         return string
     }
 

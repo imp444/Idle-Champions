@@ -103,7 +103,7 @@ class IC_SharedFunctions_Class
     ; returns this class's version information (string)
     GetVersion()
     {
-        return "v2.7.1, 2023-09-21"
+        return "v2.7.4, 2023-10-30"
     }
 
     ;Gets data from JSON file
@@ -520,7 +520,7 @@ class IC_SharedFunctions_Class
     ; Template function for whether determining if to Dash Wait. Default is Yes if shandie is in the formation.
     ShouldDashWait()
     {
-        return this.IsChampInFormation( 47, this.Memory.GetCurrentFormation() )
+        return this.IsChampInFormation( ActiveEffectKeySharedFunctions.Shandie.HeroID, this.Memory.GetCurrentFormation() )
     }
 
     ; Returns count for how many TimeScale values equal the value passed to the function
@@ -815,7 +815,15 @@ class IC_SharedFunctions_Class
         {
             g_SharedData.LoopString := "Opening IC.."
             programLoc := g_UserSettings[ "InstallPath" ]
-            Run, %programLoc%
+            try
+            {
+                Run, %programLoc%
+            }
+            catch
+            {
+                MsgBox, 48, Unable to launch game, `nVerify the game location is set properly by enabling the Game Location Settings addon, clicking Change Game Location on the Briv Gem Farm tab, and ensuring the launch command is set properly.
+                ExitApp
+            }
             Sleep, %waitForProcessTime%
             ; Add 10s (default) to ElapsedTime so each exe waiting loop will take at least 10s before trying to run a new instance of hte game
             timeoutForPID := ElapsedTime + processWaitingTimeout 
@@ -1293,11 +1301,21 @@ class IC_SharedFunctions_Class
     ; Calculates the number of Haste stacks are required to jump from area 1 to the modron's reset area. worstCase default is true.
     CalculateBrivStacksToReachNextModronResetZone(worstCase := true)
     {
+        g_SharedData.RedoStackCalc := False
         jumps := 0
         consume := this.IsBrivMetalborn() ? -.032 : -.04  ;Default := 4%, SteelBorn := 3.2%
-        skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
-        skipChance := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipChance()
-        distance := this.Memory.GetModronResetArea()
+        if g_BrivUserSettings[ "ManualBrivJumpValue" ] is integer
+            skipAmount := g_BrivUserSettings[ "ManualBrivJumpValue" ] ? g_BrivUserSettings[ "ManualBrivJumpValue" ] : ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        else
+            skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        skipChance := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipChance() 
+        if (!skipChance)
+        {
+            skipChance := 1
+            g_SharedData.RedoStackCalc := True
+        }
+        skipChance := skipChance ? skipChance : 1
+        distance := this.Memory.GetModronResetArea() - this.ThelloraRushTest()
         ; skipAmount == 1 is a special case where Briv won't use stacks when he skips 0 areas.
         ; average
         if(skipAmount == 1) ; true worst case =  worstCase ? Ceil(distance / 2) : normalcalc
@@ -1317,7 +1335,10 @@ class IC_SharedFunctions_Class
         jumps := 0
         consume := this.IsBrivMetalborn() ? -.032 : -.04 ;Default := 4%, MetalBorn := 3.2%
         stacks := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadHasteStacks()
-        skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        if g_BrivUserSettings[ "ManualBrivJumpValue" ] is integer
+            skipAmount := g_BrivUserSettings[ "ManualBrivJumpValue" ] ? g_BrivUserSettings[ "ManualBrivJumpValue" ] : ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        else
+            skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
         skipChance := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipChance()
         distance := targetZone - startZone
         ; skipAmount == 1 is a special case where Briv won't use stacks when he skips 0 areas.
@@ -1345,7 +1366,10 @@ class IC_SharedFunctions_Class
         consume := this.IsBrivMetalborn() ? -.032 : -.04 ;Default := 4%, MetalBorn := 3.2%
         stacks := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadHasteStacks()
         currentZone := this.Memory.ReadCurrentZone()
-        skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        if g_BrivUserSettings[ "ManualBrivJumpValue" ] is integer
+            skipAmount := g_BrivUserSettings[ "ManualBrivJumpValue" ] ? g_BrivUserSettings[ "ManualBrivJumpValue" ] : ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
+        else
+            skipAmount := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipAmount()
         skipChance := ActiveEffectKeySharedFunctions.Briv.BrivUnnaturalHasteHandler.ReadSkipChance()
         jumps := Floor(Log(49 / Max(stacks,49)) / Log(1+consume))
         avgJumpDistance := skipAmount * (1-skipChance) + (skipAmount+1) * skipChance
@@ -1354,6 +1378,18 @@ class IC_SharedFunctions_Class
         ;zones := jumps * avgJumpDistance
         zones := avgMinOrMax == 0 ? jumps * avgJumpDistance : (avgMinOrMax == 1 ? jumps * minJumpDistance : jumps * maxJumpDistance)
         return currentZone + zones
+    }
+
+    ; Returns how many Rush stacks are available if Thellora is in the party. 
+    ThelloraRushTest()
+    {
+        isInParty := this.IsChampInFormation( ActiveEffectKeySharedFunctions.Thellora.HeroID, this.Memory.GetCurrentFormation() )
+        if (isInParty)
+        {
+            rushStacks := ActiveEffectKeySharedFunctions.Thellora.ThelloraPlateausOfUnicornRunHandler.ReadRushStacks()
+            return rushStacks
+        }
+        return 0
     }
 
     ; Returns whether Briv's spec in the modron core is set to Metalborn.

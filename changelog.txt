@@ -1,3 +1,33 @@
+November 7, 2023
+    Added RushWait that will wait at start of run for Thellora's Rush to trigger.
+    Removed Jimothy addon.
+    Added a safety check for AutoDetect so when Briv's skip chance cannot be read it uses a default of 100% instead of setting 99 as the expected stacks.
+    Added sanity checks to list size memory reads, especially in inventory view.
+    Updated AddonManagement to notify users when it detects that addons have been updated and to use the updated addon version for saved enabled addons.
+    Fixed possible cause of memory bloat.
+    Fixed deleted addons showing as blank line in Addon Management.
+
+November 4, 2023
+    Updated Chest Purchaser addon to use defines from the server.
+
+November 3, 2023
+    Updated 64 bit imports for v546.
+    Updated Steam/EGS pointers for v546.
+
+November 1, 2023
+    Updated 64 bit imports for v544.
+    Added a setting to manually set Briv's jump value.
+    Added setting to disable use of haste in calculations to determine when to stack (disables double runs).
+    Added check for Thellora rush when using auto-calc setting.
+    Updated default addons to be Addon Management | About | Briv Gem Farm | Game Location Settings | Stats.
+    Added a section to the about tab that lists currently enabled addons.
+    Added pointer handlers for the game's data in UserData and UserStatHandler (unused).
+    Added Thellora Hero Handler.
+    Fixed several bugs with reading dictionaries, most notably how Quads are handled.
+    Fixed bug with normal Quad reads.
+    Added error message for when trying to start the game with a bad game location setting.
+    Added Resets to imports (request by ImpEGamer)
+
 October 5, 2023
     Added champion ID Memory Reads.
     Updated 64 bit imports for v540.

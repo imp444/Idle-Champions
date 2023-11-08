@@ -6,6 +6,8 @@
 #include %A_LineFile%\..\IC_EngineSettings_Class.ahk
 #include %A_LineFile%\..\IC_CrusadersGameDataSet_Class.ahk
 #include %A_LineFile%\..\IC_DialogManager_Class.ahk
+#include %A_LineFile%\..\IC_UserStatHandler_Class.ahk
+#include %A_LineFile%\..\IC_UserData_Class.ahk
 #include %A_LineFile%\..\IC_ActiveEffectKeyHandler_Class.ahk
 #include *i %A_LineFile%\..\Imports\IC_GameVersion32_Import.ahk
 #include *i %A_LineFile%\..\Imports\IC_GameVersion64_Import.ahk
@@ -43,6 +45,9 @@ class IC_MemoryFunctions_Class
             ExitApp
         }
         currentPointers := JSON.parse( oData )
+        versionArray := StrSplit(currentPointers.Version, ".")
+        if(versionArray.Count() > 1)
+            currentPointers.Version := Round(currentPointers.Version, 1)
         this.PointerVersionString := currentPointers.Version . (currentPointers.Platform ? (" (" currentPointers.Platform  . ") ") : "")
         _MemoryManager.exeName := g_UserSettings[ "ExeName" ]
         _MemoryManager.Refresh()
@@ -51,13 +56,15 @@ class IC_MemoryFunctions_Class
         this.EngineSettings := new IC_EngineSettings_Class(currentPointers.EngineSettings.moduleAddress, currentPointers.EngineSettings.staticOffset, currentPointers.EngineSettings.moduleOffset)
         this.CrusadersGameDataSet := new IC_CrusadersGameDataSet_Class(currentPointers.CrusadersGameDataSet.moduleAddress, currentPointers.CrusadersGameDataSet.moduleOffset)
         this.DialogManager := new IC_DialogManager_Class(currentPointers.DialogManager.moduleAddress, currentPointers.DialogManager.moduleOffset)
+        this.UserStatHandler := new IC_UserStatHandler_Class(currentPointers.UserStatHandler.moduleAddress, currentPointers.UserStatHandler.staticOffset, currentPointers.UserStatHandler.moduleOffset)
+        this.UserData := new IC_UserData_Class(currentPointers.UserData.moduleAddress, currentPointers.UserData.staticOffset, currentPointers.UserData.moduleOffset)
         this.ActiveEffectKeyHandler := new IC_ActiveEffectKeyHandler_Class(this)
     }
 
     ;Updates installed after the date of this script may result in the pointer addresses no longer being accurate.
     GetVersion()
     {
-        return "v2.1.3, 2023-10-6, IC v0.463+"
+        return "v2.4.0, 2023-10-30"
     }
 
     GetPointersVersion()
@@ -82,6 +89,8 @@ class IC_MemoryFunctions_Class
         this.EngineSettings.Refresh()
         this.CrusadersGameDataSet.Refresh()
         this.DialogManager.Refresh()
+        this.UserStatHandler.Refresh()
+        this.UserData.Refresh()
         this.ActiveEffectKeyHandler.Refresh()
     }
 
@@ -867,7 +876,7 @@ class IC_MemoryFunctions_Class
     GetInventoryBuffAmountByID(buffID)
     {
         size := this.ReadInventoryItemsCount()
-        if(!size)
+        if (size < 0 OR size > 2000)
             return ""
         ; Find the buff
         index := this.BinarySearchList(this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.BuffHandler.inventoryBuffs, ["ID"], 1, size, buffID)
@@ -880,7 +889,7 @@ class IC_MemoryFunctions_Class
     GetInventoryBuffNameByID(buffID)
     {
         size := this.ReadInventoryItemsCount()
-        if(!size)
+        if (size < 0 OR size > 2000)
             return ""
         ; Find the buff
         index := this.BinarySearchList(this.GameManager.game.gameInstances[this.GameInstance].Controller.userData.BuffHandler.inventoryBuffs, ["ID"], 1, size, buffID)
