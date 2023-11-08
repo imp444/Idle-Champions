@@ -74,8 +74,6 @@ ReloadBrivGemFarmSettings(loadFromFile := True)
         g_BrivUserSettings[ "AutoCalculateWorstCase" ] := true
     if ( g_BrivUserSettings[ "PreferredBrivJumpZones" ] == "")
 	    g_BrivUserSettings[ "PreferredBrivJumpZones" ] := [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    if ( g_BrivUserSettings[ "AlwaysStackSB" ] == "" )
-        g_BrivUserSettings[ "AlwaysStackSB" ] := false
     ; Found legacy settings file.
     if ( !writeSettings AND loadFromFile AND g_BrivUserSettings[ "LastSettingsUsed" ] == "" )
     {

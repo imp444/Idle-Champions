@@ -23,7 +23,6 @@ Gui, ICScriptHub:Add, Checkbox, vFkeysCheck x15 y+5, Level Champions with Fkeys?
 Gui, ICScriptHub:Add, Checkbox, vStackFailRecoveryCheck x15 y+5, Enable manual resets to recover from failed Briv stacking?
 Gui, ICScriptHub:Add, Checkbox, vDisableDashWaitCheck x15 y+5, Disable Dash Wait?
 GUIFunctions.UseThemeTextColor("InputBoxTextColor")
-Gui, ICScriptHub:Add, Checkbox, vAlwaysStackSBCheck Checked%vAlwaysStackSB% x15 y+5, Always Stack SB?
 if(g_isDarkMode)
     Gui, ICScriptHub:Font, g_CustomColor
 Gui, ICScriptHub:Add, Edit, vNewStackZone x15 y+5 w50, % g_BrivUserSettings[ "StackZone" ]
@@ -206,7 +205,6 @@ class IC_BrivGemFarm_Component
         GUIFunctions.AddToolTip("BrivGemFarmStopButton", "Stop Gem Farm")
         GUIFunctions.AddToolTip("BrivGemFarmConnectButton", "Reconnect to Gem Farm Script. [If the stats have stopped updating, click this to start updating them again]")
         GUIFunctions.AddToolTip("BrivGemFarmSaveButton", "Save settings for this session.")
-        GUIFunctions.AddToolTip("AlwaysStackSBCheck", "Always farm SB stacks right after reaching the stacking zone (for single run early stacking)")
     }
 
     UpdateGUICheckBoxes()
@@ -218,7 +216,6 @@ class IC_BrivGemFarm_Component
         GuiControl,ICScriptHub:, OpenSilversCheck, % g_BrivUserSettings[ "OpenSilvers" ] 
         GuiControl,ICScriptHub:, OpenGoldsCheck, % g_BrivUserSettings[ "OpenGolds" ] 
         GuiControl,ICScriptHub:, DisableDashWaitCheck, % g_BrivUserSettings[ "DisableDashWait" ]
-        GuiControl,ICScriptHub:, AlwaysStackSBCheck, % g_BrivUserSettings[ "AlwaysStackSB" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsCheck, % g_BrivUserSettings[ "AutoCalculateBrivStacks" ]
         GuiControl,ICScriptHub:, BrivAutoCalcStatsWorstCaseCheck, % g_BrivUserSettings[ "AutoCalculateWorstCase" ]
     }
@@ -357,7 +354,6 @@ class IC_BrivGemFarm_Component
         g_BrivUserSettings[ "TargetStacks" ] := StrReplace(NewTargetStacks, ",")
         g_BrivUserSettings[ "RestartStackTime" ] := StrReplace(NewRestartStackTime, ",")
         g_BrivUserSettings[ "DisableDashWait" ] := DisableDashWaitCheck
-        g_BrivUserSettings[ "AlwaysStackSB" ] := AlwaysStackSBCheck
         g_BrivUserSettings[ "BuySilvers" ] := BuySilversCheck
         g_BrivUserSettings[ "BuyGolds" ] := BuyGoldsCheck
         g_BrivUserSettings[ "OpenSilvers" ] := OpenSilversCheck
