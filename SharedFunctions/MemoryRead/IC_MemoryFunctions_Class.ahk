@@ -64,7 +64,7 @@ class IC_MemoryFunctions_Class
     ;Updates installed after the date of this script may result in the pointer addresses no longer being accurate.
     GetVersion()
     {
-        return "v2.4.0, 2023-10-30"
+        return "v2.4.2, 2023-11-21"
     }
 
     GetPointersVersion()
@@ -618,7 +618,7 @@ class IC_MemoryFunctions_Class
 
     ReadUltimateCooldownByItem(item := 0)
     {
-        return g_SF.Memory.GameManager.game.gameInstances[this.GameInstance].Screen.uiController.ultimatesBar.ultimateItems[item].ultimateAttack.CooldownTimer.Read()
+        return g_SF.Memory.GameManager.game.gameInstances[this.GameInstance].Screen.uiController.ultimatesBar.ultimateItems[item].ultimateAttack.internalCooldownTimer.Read()
     }
 
     ReadWelcomeBackActive()
@@ -982,6 +982,8 @@ class IC_MemoryFunctions_Class
 
     ReadConversionCurrencyBySlot(slot := 0)
     {
+        if ( this.ReadDialogNameBySlot(slot) != "BlessingsStoreDialog")
+            return ""
         return this.DialogManager.dialogs[slot].currentCurrency.ID.Read()
     }
 
@@ -991,7 +993,9 @@ class IC_MemoryFunctions_Class
     }
 
     ReadForceConvertFavorBySlot(slot := 0)
-    {
+    {        
+        if (this.ReadDialogNameBySlot(slot) != "BlessingsStoreDialog")
+            return ""
         return this.DialogManager.dialogs[slot].forceConvertFavor.Read()
     }
 
@@ -1146,5 +1150,5 @@ class IC_MemoryFunctions_Class
         return version
     }
 
-    #include *i IC_MemoryFunctions_Extended.ahk
+    #include *i %A_LineFile%\..\IC_MemoryFunctions_Extended.ahk
 }

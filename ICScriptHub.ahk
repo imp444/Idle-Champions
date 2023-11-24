@@ -23,7 +23,7 @@ CoordMode, Mouse, Client
 ;Modron Automation Gem Farming Script
 GetScriptHubVersion()
 {
-    return "v3.6.1, 2023-10-31"
+    return "v3.6.2, 2023-11-14"
 }
 
 ;class and methods for parsing JSON (User details sent back from a server call)
@@ -155,9 +155,10 @@ BuildToolTips()
 ; Shows a tooltip if the control with mouseover has a tooltip associated with it.
 CheckControlForTooltip()
 {
-        MouseGetPos,,,, VarControl
-        if(VarControl)
-            ToolTip % g_MouseToolTips[VarControl]
+        MouseGetPos,,,VarWin, VarControl
+        varTTLoc := VarWin . VarControl
+        if(varTTLoc)
+            ToolTip % g_MouseToolTips[varTTLoc]
         else
             ToolTip
         SetTimer, HideToolTip, -3000
