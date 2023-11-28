@@ -19,6 +19,7 @@ class GameObjectStructure
     LastDictIndex := {}
     _CollectionKeyType := ""
     _CollectionValType := ""
+    static InvalidDictionaryKeyString := "<invalid key>"
     static SystemTypes := { "System.Byte" : "Char"
         ,"System.UByte" : "UChar"
         ,"System.Short" : "Short"
@@ -120,7 +121,7 @@ class GameObjectStructure
             collectionEntriesOffset := this.BasePtr.Is64Bit ? 0x10 : 0x8
             this.UpdateCollectionOffsets(key, collectionEntriesOffset, offset)
         }
-        ; Special case for Dictionary collections in a gameobject. Look up dictionary offsets with every lookup. Do not store dictionary key/value object locations.
+        ; Special case for Dictionary collections in a gameobject. Store dictionary items with keys that have a system type to speed up future lookups. Do not store unstable keys.
         else if(this.ValueType == "Dict")
         {
             if (key == "key")
@@ -133,7 +134,8 @@ class GameObjectStructure
                     tempObj.ValueType := this.BasePtr.Is64Bit ? "Int64" : "Int"                 ; If there is no lookup value type then assume type is a pointer
                 offsetInsertLoc := tempObj.FullOffsets.Count() + 1,                             ; Current offsets count
                 tempObj.FullOffsets.Push(collectionEntriesOffset, offset)                       ; Add the offsets to this object so the .Read() will give the value of the key
-                this.UpdateChildrenWithFullOffsets(tempObj, offsetInsertLoc, [collectionEntriesOffset, offset])  ; Update all sub-objects with their missing collection/item offsets.
+                if(!quickLookup)
+                    this.UpdateChildrenWithFullOffsets(tempObj, offsetInsertLoc, [collectionEntriesOffset, offset])  ; Update all sub-objects with their missing collection/item offsets.
                 return tempObj                                                                  ; return temporary key object
             }
             else if (key == "value")
@@ -145,12 +147,14 @@ class GameObjectStructure
                 keyReadObject.FullOffsets.Push(collectionEntriesOffset, keyOffset)                  ; add offsets for key
                 keyReadObject.ValueType := GameObjectStructure.SystemTypes[this._CollectionKeyType] ; Update key's value type if it is known
                 if (keyReadObject.ValueType == "")
-                    keyReadObject.ValueType := this.BasePtr.Is64Bit ? "Int64" : "Int"               ; If there is no lookup value type then assume type is a pointer
-                key := keyReadObject.Read()                                                         ; Retrieve the value of the key
+                    key := keyReadObject.Read(this.BasePtr.Is64Bit ? "Int64" : "Int")               ; If there is no lookup value type then assume type is a pointer
+                else
+                    key := keyReadObject.Read()                                                     ; Retrieve the value of the key
                 if(index == this.LastDictIndex[key])                                            ; Use previously created object if it is still being used.
                     return this.DictionaryObject[key]
-                if (!quickLookup)
-                    this.BuildDictionaryEntry(key, index, collectionEntriesOffset, offset)      ; Build a dictonary entry for this key.
+                isUnstableStableKey := (keyReadObject.ValueType == "")                          ; Key value is not a known type which means the key is likely a pointer and subject to unpredictable changes. (Do not cache these dictionary lookups)
+                this.BuildDictionaryEntry(key, index, collectionEntriesOffset, offset, isUnstableStableKey) ; Build a dictonary entry for this key.
+                key := isUnstableStableKey ? GameObjectStructure.InvalidDictionaryKeyString : key ; Use default value if key is unstable 
                 return this.DictionaryObject[key]                                               ; return the temporary value object with access to all objects it has access to.
             }
             else
@@ -163,8 +167,9 @@ class GameObjectStructure
                     return this.DictionaryObject[key]
                 collectionEntriesOffset := this.BasePtr.Is64Bit ? 0x18 : 0xC                    ; Offset for the entries (key/value location) of the collection.
                 offset := this.CalculateDictOffset(["value",keyIndex]) + 0                      ; Expected offset to the value corresponding to the key.
-                if (!quickLookup)
-                    this.BuildDictionaryEntry(key, keyIndex, collectionEntriesOffset, offset)       ; Build a dictonary entry for this key.
+                isUnstableStableKey := GameObjectStructure.SystemTypes[this._CollectionKeyType] == "" ; Key value is not a known type
+                this.BuildDictionaryEntry(key, keyIndex, collectionEntriesOffset, offset, isUnstableStableKey)   ; Build a dictonary entry for this key.
+                key := isUnstableStableKey ? GameObjectStructure.InvalidDictionaryKeyString : key ; Use default value if key is unstable 
                 return this.DictionaryObject[key]                                               ; return the temporary value object with access to all objects it has access to.
             }
         }
@@ -177,7 +182,7 @@ class GameObjectStructure
 
     GetVersion()
     {
-        Return "v3.0.1, 2023-11-25"
+        Return "v3.0.2, 2023-11-26"
     }
 
     ; Returns the full offsets of this object after BaseAddress.
@@ -243,17 +248,20 @@ class GameObjectStructure
     }
 
     ; Build a dictonary entry for the key.
-    BuildDictionaryEntry(key, keyindex, collectionEntriesOffset, offset)
+    BuildDictionaryEntry(key, keyindex, collectionEntriesOffset, offset, isUnstable)
     {
+        if(isUnstable)                                                                 ; Key is likely a pointer which will can change, especially on a application reload
+            key := GameObjectStructure.InvalidDictionaryKeyString
         this.DictionaryObject.Delete(key)                                              ; Delete key object before building new ones.
         this.DictionaryObject[key] := this.Clone()                                     ; Deep copy of this object.
-        this.LastDictIndex[key] := keyIndex                                            ; Creating new index for key; remember this index.
+        if(!isUnstable)                                                                ; Don't create key indexes for unstable keys.
+            this.LastDictIndex[key] := keyIndex                                        ; Creating new index for key; remember this index.
         this.DictionaryObject[key].IsAddedIndex := true                                ; Stable clones won't copy this object
         offsetInsertLoc := this.DictionaryObject[key].FullOffsets.Count() + 1,         ; Current offsets count.
         this.DictionaryObject[key].FullOffsets.Push(collectionEntriesOffset, offset)   ; Add the offsets to this object so the .Read() will give the value of the value.
-        ; this.DictionaryObject[key]._CollectionValType := 
         this.DictionaryObject[key].ValueType := GameObjectStructure.SystemTypes[this._CollectionValType] ? GameObjectStructure.SystemTypes[this._CollectionValType] : this.DictionaryObject[key].ValueType
         ; DEBUG: Uncomment following line to enable a readable offset string when debugging GameObjectStructure Offsets
+        ; this.DictionaryObject[key].FullOffsetsHexString := ArrFnc.GetHexFormattedArrayString(this.DictionaryObject[key].FullOffsets)
         ; this.DictionaryObject[key].GSOName := key                                       
         this.UpdateChildrenWithFullOffsets(this.DictionaryObject[key], offsetInsertLoc, [collectionEntriesOffset, offset]) ; Update all sub-objects with their missing collection/item offsets.
     }
