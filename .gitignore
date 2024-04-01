@@ -13,8 +13,6 @@ Addons/IC_BrivGemFarm_Performance/IC_BrivGemFarm_Mods.ahk
 AddOns/IC_BrivGemFarm_Private/
 #AddonManagement Addon ignores
 AddOns/GeneratedAddonInclude.ahk
-AddOns/IC_Addon_Management/AddonManagement.json
-Themes/CurrentTheme.json
-AddOns/IC_BrivGemFarm_Performance/LastGUID_BrivGemFarm.json
-AddOns/IC_BrivGemFarm_Performance/LastGUID_Miniscripts.json
-SharedFunctions/MemoryRead/CurrentPointers.json
+AddOns/*_Addon_Management/AddonManagement.json
+LastGUID*.json
+Current*.json

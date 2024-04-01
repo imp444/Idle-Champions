@@ -1,3 +1,17 @@
+March 30, 2024
+    Fixed reading Briv's slot 4 enchant level on steam version.
+    Fixed click damage not working on non us-en keyboard layouts.
+
+March 29, 2024
+    Added backwards compatible IC_UpdateClass_Class to allow old addons to function while addon developers update addons.
+    Updated 64 bit Imports for v569. (Steam Only)
+
+March 21, 2024
+    Released version 4.0.0 (see news for changes).
+    Updated 64 bit Imports for v567. (Steam only)
+    Updated pointers for Steam v567.
+    Updated 64 bit Imports for v568. (Steam Only)
+
 December 6, 2023
     Updated 64 bit Imports for v553.
     Updated EGS pointers for v553.

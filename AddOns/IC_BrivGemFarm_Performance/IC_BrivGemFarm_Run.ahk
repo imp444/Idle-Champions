@@ -17,27 +17,30 @@ ListLines Off
 Process, Priority,, High
 CoordMode, Mouse, Client
 
+#include %A_LineFile%\..\..\..\SharedFunctions\json.ahk
+#include %A_LineFile%\..\..\IC_Core\IC_SharedFunctions_Class.ahk
+#include %A_LineFile%\..\IC_BrivGemFarm_Functions.ahk
+;server call functions and variables Included after GUI so chest tabs maybe non optimal way of doing it
+#include %A_LineFile%\..\..\..\ServerCalls\IC_ServerCalls_Class.ahk
+#include %A_LineFile%\..\..\IC_Core\IC_SaveHelper_Class.ahk
+#include %A_LineFile%\..\IC_BrivGemFarm_Settings.ahk
+#include %A_LineFile%\..\..\..\SharedFunctions\SH_GUIFunctions.ahk
+#include %A_LineFile%\..\..\..\SharedFunctions\SH_UpdateClass.ahk
+
 ;Load user settings
 global g_SF := new IC_BrivSharedFunctions_Class ; includes MemoryFunctions in g_SF.Memory
 global g_BrivUserSettings 
 global g_UserSettings := g_SF.LoadObjectFromJSON( A_LineFile . "\..\..\..\Settings.json" )
 global g_BrivGemFarm := new IC_BrivGemFarm_Class
-global g_KeyMap := KeyHelper.BuildVirtualKeysMap()
+global g_KeyMap:= {}
+global g_SCKeyMap:= {}
+KeyHelper.BuildVirtualKeysMap(g_KeyMap, g_SCKeyMap)
 global g_ServerCall
 global g_InputsSent := 0
 global g_SaveHelper := new IC_SaveHelper_Class
 global g_BrivUserSettingsFromAddons := {}
 
-#include %A_LineFile%\..\..\..\SharedFunctions\json.ahk
-#include %A_LineFile%\..\..\..\SharedFunctions\IC_SharedFunctions_Class.ahk
-#include %A_LineFile%\..\IC_BrivGemFarm_Functions.ahk
-;server call functions and variables Included after GUI so chest tabs maybe non optimal way of doing it
-#include %A_LineFile%\..\..\..\ServerCalls\IC_ServerCalls_Class.ahk
-#include %A_LineFile%\..\..\..\SharedFunctions\IC_SaveHelper_Class.ahk
 #include *i %A_LineFile%\..\IC_BrivGemFarm_Mods.ahk
-#include %A_LineFile%\..\IC_BrivGemFarm_Settings.ahk
-#include %A_LineFile%\..\..\..\SharedFunctions\IC_GUIFunctions_Class.ahk
-#include %A_LineFile%\..\..\..\SharedFunctions\IC_UpdateClass_Class.ahk
 
 ;check if first run
 If !IsObject( g_UserSettings )
@@ -71,7 +74,7 @@ class IC_BrivGemFarmRun_SharedData_Class
         ExitApp
     }
 }
-IC_UpdateClass_Class.UpdateClassFunctions(g_SharedData, IC_BrivGemFarmRun_SharedData_Class)
+SH_UpdateClass.UpdateClassFunctions(g_SharedData, IC_BrivGemFarmRun_SharedData_Class)
 
 ;Gui, BrivPerformanceGemFarm:New, -LabelMain +hWndhMainWnd -Resize
 Gui, BrivPerformanceGemFarm:New, -Resize

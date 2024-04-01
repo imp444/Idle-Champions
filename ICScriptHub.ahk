@@ -19,21 +19,22 @@ Process, Priority,, Normal
 
 CoordMode, Mouse, Client
 
-
 ;Modron Automation Gem Farming Script
 GetScriptHubVersion()
 {
-    return "v3.6.2, 2023-11-14"
+    return "v4.0.0, 2024-03-19"
 }
 
 ;class and methods for parsing JSON (User details sent back from a server call)
 #include %A_ScriptDir%\SharedFunctions\json.ahk
 ;server call functions and variables Included after GUI so chest tabs maybe non optimal way of doing it
-#include %A_ScriptDir%\ServerCalls\IC_ServerCalls_Class.ahk
+#include %A_ScriptDir%\ServerCalls\SH_ServerCalls_Includes.ahk
 ;logging functions
 ;#include *i %A_ScriptDir%\Logging\IC_Log_Class.ahk
 
-global g_KeyMap := KeyHelper.BuildVirtualKeysMap()
+global g_KeyMap:= {}
+global g_SCKeyMap:= {}
+KeyHelper.BuildVirtualKeysMap(g_KeyMap, g_SCKeyMap)
 global g_ServerCall
 global g_UserSettings := {}
 global g_TabControlHeight := 630
@@ -46,14 +47,17 @@ global g_ConnectButton := A_LineFile . "\..\Images\connect-100x100.png"
 global g_ReloadButton := A_LineFile . "\..\Images\refresh-smooth-25x25.png"
 global g_SaveButton := A_LineFile . "\..\Images\save-100x100.png"
 global g_GameButton := A_LineFile . "\..\Images\idledragons-25x25.png"
+global g_MacroButton := A_LineFile . "\..\Images\macro-100x100.png"
 global g_MouseTooltips := {}
 global g_Miniscripts := {}
 
 ;Load themes
 GUIFunctions.LoadTheme()
 if (GUIfunctions.isDarkMode)
+{
     g_ReloadButton := A_LineFile . "\..\Images\refresh-smooth-white-25x25.png"
-
+    g_MacroButton := A_LineFile . "\..\Images\macro-dark-100x100.png"
+}
 ;Load user settings
 g_UserSettings := IC_SharedFunctions_Class.LoadObjectFromJSON( A_LineFile . "\..\Settings.json" )
 ;check if first run
@@ -81,7 +85,7 @@ if(g_UserSettings[ "WriteSettings" ] == true)
 }
 
 
-global g_SF := new IC_SharedFunctions_Class ; includes MemoryFunctions in g_SF.Memory
+global g_SF := new SH_SharedFunctions ; includes MemoryFunctions in g_SF.Memory
 
 ;define a new gui with tabs and buttons
 Gui, ICScriptHub:New
@@ -92,6 +96,7 @@ Gui, ICScriptHub: +HwndGUIICScriptHub
 global g_MenuBarXPos:=4
 GUIFunctions.AddButton(g_GameButton,"Launch_Clicked","LaunchClickButton")
 GUIFunctions.AddButton(g_ReloadButton,"Reload_Clicked","ReloadClickButton")
+GUIFunctions.AddButton(g_MacroButton, "Launch_Macro_Clicked", "LaunchMacroClickButton")
 
 GUIFunctions.UseThemeTextColor()
 ; Needed to add tabs
@@ -125,6 +130,19 @@ Launch_Clicked()
     g_SF.PID := ErrorLevel
 }
 
+Launch_Macro_Clicked()
+{
+    macroRecLoc :=  A_LineFile . "\..\SharedFunctions\SH_MacroRecorder.ahk"
+    try
+    {
+        Run, %A_AhkPath% /r "%macroRecLoc%"
+    }
+    catch
+    {
+        MsgBox, 48, Unable to launch Macro Recorder, `nThere was a problem launching the Macro Recorder
+    }
+}
+
 ICScriptHubGuiClose()
 {
     MsgBox 4,, Are you sure you want to `exit?
@@ -150,6 +168,7 @@ BuildToolTips()
 {
     GUIFunctions.AddToolTip("LaunchClickButton", "Launch Idle Champions")
     GUIFunctions.AddToolTip("ReloadClickButton", "Reload Script Hub")
+    GUIFunctions.AddToolTip("LaunchMacroClickButton", "Launch Macro Recorder")
 }
 
 ; Shows a tooltip if the control with mouseover has a tooltip associated with it.
@@ -171,11 +190,11 @@ HideToolTip()
 
 ;#include %A_ScriptDir%\SharedFunctions\Windrag.ahk
 ; Shared Functions
-#include %A_ScriptDir%\SharedFunctions\IC_SharedFunctions_Class.ahk
-#include %A_ScriptDir%\SharedFunctions\IC_ArrayFunctions_Class.ahk
-#include %A_ScriptDir%\SharedFunctions\IC_KeyHelper_Class.ahk
-#include %A_ScriptDir%\SharedFunctions\IC_GUIFunctions_Class.ahk
-#include %A_ScriptDir%\SharedFunctions\IC_UpdateClass_Class.ahk
+#include %A_ScriptDir%\SharedFunctions\SH_SharedFunctions.ahk
+#include %A_ScriptDir%\SharedFunctions\SH_ArrFnc.ahk
+#include %A_ScriptDir%\SharedFunctions\SH_KeyHelper.ahk
+#include %A_ScriptDir%\SharedFunctions\SH_GUIFunctions.ahk
+#include %A_ScriptDir%\SharedFunctions\SH_UpdateClass.ahk
 #include *i %A_ScriptDir%\AddOns\AddOnsIncluded.ahk
 
 ;#IfWinActive ahk_exe AutoHotkeyU64.exe

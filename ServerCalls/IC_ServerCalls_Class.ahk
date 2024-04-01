@@ -47,7 +47,7 @@ class IC_ServerCalls_Class
 
     UpdateDummyData()
     {
-        this.dummyData := "&language_id=1&timestamp=0&request_id=0&network_id=" . this.networkID . "&mobile_client_version=" . this.clientVersion
+        this.dummyData := "&language_id=1&timestamp=0&request_id=0&network_id=" . this.networkID . "&mobile_client_version=" . this.clientVersion . "&offline_v2_build=1"
     }
 
     SetServer(serverAddress)
@@ -132,13 +132,18 @@ class IC_ServerCalls_Class
     }
 
     ; Buys <chests> number of <chestID> chests. Automatically uses Patron purchase call for patron chests.
-    CallBuyChests( chestID, chests )
+    CallBuyChests( chestID, chests, chestType := "")
     {
-        if ( chests > 100 )
-            chests := 100
+        if ( chests > 250 )
+            chests := 250
         else if ( chests < 1 )
             return
-        if(chestID != 152 AND chestID != 153 AND chestID != 219  AND chestID != 311 )
+        if(chestTYpe == "eventV2")
+        {
+            chestParams := this.dummyData "&user_id=" this.userID "&hash=" this.userHash "&instance_id=" this.instanceID "&chest_type_id=" chestID "&count=" chests "&spend_event_v2_tokens=1"
+            return this.ServerCall( "buysoftcurrencychest", chestParams )
+        }
+        else if(chestID != 152 AND chestID != 153 AND chestID != 219  AND chestID != 311)
         {
             chestParams := this.dummyData "&user_id=" this.userID "&hash=" this.userHash "&instance_id=" this.instanceID "&chest_type_id=" chestID "&count=" chests
             return this.ServerCall( "buysoftcurrencychest", chestParams )
@@ -317,7 +322,7 @@ class IC_ServerCalls_Class
             suggestedServer := response.play_server
         OutputDebug, % "Server Suggested web root is: " . suggestedServer
     }
-    #include  *i IC_ServerCalls_Class_Extra.ahk
+    #include *i %A_LineFile%\..\IC_ServerCalls_Class_Extra.ahk
 }
 
 class Byteglow_ServerCalls_Class
