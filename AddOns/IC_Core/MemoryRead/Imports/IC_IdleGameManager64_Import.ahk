@@ -93,7 +93,7 @@ this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKey
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler,"Int", [0x20])
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def.Key := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def,"UTF-16", [0x18])
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def.KeyHash := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def,"Int", [0x70])
-this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def.Name := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def,"UTF-16", [0x18])
+this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def.Name := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes.effects.effectKeysByHashedKeyName.List.parentEffectKeyHandler.def,"UTF-16", [0x20])
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.allUpgrades := New GameObjectStructure(this.game.gameInstances.Controller.userData.HeroHandler.heroes,"Dict", [0x2f0])
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.allUpgrades._CollectionKeyType := "System.Int32"
 this.game.gameInstances.Controller.userData.HeroHandler.heroes.allUpgrades._CollectionValType := "CrusadersGame.Defs.UpgradeDef"
@@ -173,7 +173,7 @@ this.game.gameInstances.ActiveCampaignData.currentArea.QuestRemaining := New Gam
 this.game.gameInstances.ActiveCampaignData.currentArea.level := New GameObjectStructure(this.game.gameInstances.ActiveCampaignData.currentArea,"Int", [0x54])
 this.game.gameInstances.ActiveCampaignData.currentAreaID := New GameObjectStructure(this.game.gameInstances.ActiveCampaignData,"Int", [0x88])
 this.game.gameInstances.ActiveCampaignData.highestAvailableAreaID := New GameObjectStructure(this.game.gameInstances.ActiveCampaignData,"Int", [0x90])
-this.game.gameInstances.ActiveCampaignData.gold := New GameObjectStructure(this.game.gameInstances.ActiveCampaignData,"Quad", [0x250])
+this.game.gameInstances.ActiveCampaignData.gold := New GameObjectStructure(this.game.gameInstances.ActiveCampaignData,"Quad", [0x258])
 this.game.gameInstances.FormationSaveHandler := New GameObjectStructure(this.game.gameInstances,"Int", [0x70])
 this.game.gameInstances.FormationSaveHandler.formationCampaignID := New GameObjectStructure(this.game.gameInstances.FormationSaveHandler,"Int", [0x78])
 this.game.gameInstances.FormationSaveHandler.formationSavesV2 := New GameObjectStructure(this.game.gameInstances.FormationSaveHandler,"List", [0x30])
